@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Content matches _summary.md data"},
+    {"text": "Summarizes the description mentioning auth timeout or 504 errors", "passed": true, "evidence": "'504 errors on /api/auth/refresh' and 'hardcoded 5s timeout'"},
+    {"text": "Shows acceptance criteria status — 1 of 4 completed", "passed": true, "evidence": "'Three acceptance criteria remain unchecked' implies 1/4 done"},
+    {"text": "Mentions last activity from progress log (integration test on 2026-03-07)", "passed": true, "evidence": "'Integration test...written and passing (March 7)'"},
+    {"text": "Suggests a concrete next step based on remaining criteria", "passed": true, "evidence": "'Make gateway timeout configurable in middleware.go — replace the hardcoded 5s'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}
+}

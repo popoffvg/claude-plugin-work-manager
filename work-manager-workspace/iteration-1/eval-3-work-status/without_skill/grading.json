@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Content derived from _summary.md"},
+    {"text": "Displays the raw file content to user", "passed": false, "evidence": "Reformatted into summary with tables, 'Remaining Work' section, and 'Clean working tree' note — NOT raw content"},
+    {"text": "Content includes MILAB-4521 work-id", "passed": true, "evidence": "Title: 'Work Status: MILAB-4521'"},
+    {"text": "Content includes acceptance criteria with checkbox states ([ ] and [x])", "passed": true, "evidence": "Has [x] and [ ] checkboxes"}
+  ],
+  "summary": {"passed": 3, "failed": 1, "total": 4, "pass_rate": 0.75}
+}

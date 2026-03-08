@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "work-status-display",
+  "prompt": "work status",
+  "assertions": [
+    {"text": "Reads _summary.md from cwd", "type": "behavior"},
+    {"text": "Displays the raw file content to user", "type": "output"},
+    {"text": "Content includes MILAB-4521 work-id", "type": "content"},
+    {"text": "Content includes acceptance criteria with checkbox states ([ ] and [x])", "type": "content"}
+  ]
+}

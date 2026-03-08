@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "skill_name": "work-manager",
+    "skill_path": "/Users/popoffvg/.claude/plugins/work-manager",
+    "executor_model": "claude-opus-4-6",
+    "timestamp": "2026-03-08T12:00:00Z",
+    "evals_run": [3, 4, 6, 8],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 3,
+      "eval_name": "work-status-display",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 26.4,
+        "tokens": 12952,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Output contains full file content"},
+        {"text": "Displays the raw file content to user", "passed": true, "evidence": "Exact raw markdown with frontmatter"},
+        {"text": "Content includes MILAB-4521 work-id", "passed": true, "evidence": "work-id: MILAB-4521 in frontmatter"},
+        {"text": "Content includes acceptance criteria with checkbox states", "passed": true, "evidence": "3x [ ] and 1x [x] visible"}
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "work-status-display",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 25.3,
+        "tokens": 13072,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Content derived from _summary.md"},
+        {"text": "Displays the raw file content to user", "passed": false, "evidence": "Reformatted into summary with tables — NOT raw content"},
+        {"text": "Content includes MILAB-4521 work-id", "passed": true, "evidence": "Title mentions MILAB-4521"},
+        {"text": "Content includes acceptance criteria with checkbox states", "passed": true, "evidence": "Has [x] and [ ] checkboxes"}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "work-recall-synthesize",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 26.0,
+        "tokens": 13384,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Content matches _summary.md"},
+        {"text": "Summarizes description mentioning auth timeout or 504 errors", "passed": true, "evidence": "Both mentioned"},
+        {"text": "Shows acceptance criteria status — 1 of 4 completed", "passed": true, "evidence": "'1 of 4 criteria met'"},
+        {"text": "Mentions last activity from progress log", "passed": true, "evidence": "2026-03-07 integration test"},
+        {"text": "Suggests a concrete next step", "passed": true, "evidence": "'make the gateway auth timeout configurable in middleware.go'"}
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "work-recall-synthesize",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 31.4,
+        "tokens": 13279,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Content matches _summary.md"},
+        {"text": "Summarizes description mentioning auth timeout or 504 errors", "passed": true, "evidence": "Both mentioned"},
+        {"text": "Shows acceptance criteria status — 1 of 4 completed", "passed": true, "evidence": "'Three remain unchecked' implies 1/4"},
+        {"text": "Mentions last activity from progress log", "passed": true, "evidence": "March 7 integration test"},
+        {"text": "Suggests a concrete next step", "passed": true, "evidence": "'Make gateway timeout configurable in middleware.go'"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "work-update-with-argument",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 28.9,
+        "tokens": 14163,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified file"},
+        {"text": "Appends new Progress Log entry with 2026-03-08", "passed": true, "evidence": "Entry present"},
+        {"text": "Progress entry mentions configurable timeout or GATEWAY_AUTH_TIMEOUT", "passed": true, "evidence": "GATEWAY_AUTH_TIMEOUT in entry"},
+        {"text": "Checks off 'Gateway timeout...' criterion", "passed": true, "evidence": "Changed to [x]"},
+        {"text": "Does NOT modify other criteria", "passed": true, "evidence": "Retry and load test remain [ ]"},
+        {"text": "Confirms what was logged and which criteria were checked", "passed": true, "evidence": "Response confirms both"}
+      ]
+    },
+    {
+      "eval_id": 6,
+      "eval_name": "work-update-with-argument",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 29.1,
+        "tokens": 13970,
+        "tool_calls": 9,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified file"},
+        {"text": "Appends new Progress Log entry with 2026-03-08", "passed": true, "evidence": "Entry present"},
+        {"text": "Progress entry mentions configurable timeout or GATEWAY_AUTH_TIMEOUT", "passed": true, "evidence": "GATEWAY_AUTH_TIMEOUT in entry"},
+        {"text": "Checks off 'Gateway timeout...' criterion", "passed": true, "evidence": "Changed to [x]"},
+        {"text": "Does NOT modify other criteria", "passed": true, "evidence": "Other criteria unchanged"},
+        {"text": "Confirms what was logged and which criteria were checked", "passed": true, "evidence": "Confirmed in notification"}
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "work-done-mark-complete",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 21.5,
+        "tokens": 13696,
+        "tool_calls": 7,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified"},
+        {"text": "Changes status: active to status: done", "passed": true, "evidence": "status: done in frontmatter"},
+        {"text": "Adds completed: 2026-03-08 to frontmatter", "passed": true, "evidence": "completed: 2026-03-08 present"},
+        {"text": "Appends 'Work marked done' to Progress Log", "passed": true, "evidence": "'2026-03-08: Work marked done'"},
+        {"text": "Confirms work note updated", "passed": true, "evidence": "Response confirms status done"}
+      ]
+    },
+    {
+      "eval_id": 8,
+      "eval_name": "work-done-mark-complete",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.80,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 25.3,
+        "tokens": 13072,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified"},
+        {"text": "Changes status: active to status: done", "passed": true, "evidence": "status: done in frontmatter"},
+        {"text": "Adds completed: 2026-03-08 to frontmatter", "passed": false, "evidence": "No completed: field — only status changed"},
+        {"text": "Appends 'Work marked done' to Progress Log", "passed": true, "evidence": "Entry present"},
+        {"text": "Confirms work note updated", "passed": true, "evidence": "Inferred from notification"}
+      ],
+      "notes": ["Baseline also incorrectly checked ALL 4 acceptance criteria as [x], fabricating completion of unfinished work"]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 25.7, "stddev": 3.1, "min": 21.5, "max": 28.9},
+      "tokens": {"mean": 13549, "stddev": 517, "min": 12952, "max": 14163}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.89, "stddev": 0.12, "min": 0.75, "max": 1.0},
+      "time_seconds": {"mean": 27.8, "stddev": 2.7, "min": 25.3, "max": 31.4},
+      "tokens": {"mean": 13348, "stddev": 442, "min": 13072, "max": 13970}
+    },
+    "delta": {
+      "pass_rate": "+0.11",
+      "time_seconds": "-2.1",
+      "tokens": "+201"
+    }
+  },
+  "notes": [
+    "work-status: Skill correctly displays RAW content; baseline reformats into summary — skill enforces the 'raw display' contract",
+    "work-recall: Both configs perform equally well — the _summary.md format is clear enough that baseline also synthesizes correctly",
+    "work-update: Both configs handle update-with-argument identically — well-structured file format guides behavior",
+    "work-done: Skill adds 'completed:' date field that baseline misses. CRITICAL: baseline fabricated completion of all 4 criteria (checked all [x]) — skill correctly leaves criteria unchanged",
+    "Overall: Skills provide most value in enforcing specific contracts (raw vs synthesized, completed field, preserving criteria state). The _summary.md format itself is well-designed enough that baselines perform reasonably on read-heavy tasks."
+  ]
+}

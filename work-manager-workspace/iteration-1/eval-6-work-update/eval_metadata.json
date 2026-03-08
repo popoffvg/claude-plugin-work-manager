@@ -1,0 +1,13 @@
+{
+  "eval_id": 6,
+  "eval_name": "work-update-with-argument",
+  "prompt": "update work: implemented configurable timeout via GATEWAY_AUTH_TIMEOUT env var, default 30s",
+  "assertions": [
+    {"text": "Reads _summary.md from cwd", "type": "behavior"},
+    {"text": "Appends new entry to Progress Log with today's date (2026-03-08)", "type": "output"},
+    {"text": "Progress entry mentions configurable timeout or GATEWAY_AUTH_TIMEOUT", "type": "content"},
+    {"text": "Checks off 'Gateway timeout for auth endpoints is configurable' criterion ([ ] changed to [x])", "type": "output"},
+    {"text": "Does NOT modify other criteria — remaining unchecked criteria stay unchecked", "type": "output"},
+    {"text": "Confirms what was logged and which criteria were checked off", "type": "output"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Output contains full file content from _summary.md"},
+    {"text": "Displays the raw file content to user", "passed": true, "evidence": "Output is the exact raw markdown with frontmatter, sections, checkboxes intact"},
+    {"text": "Content includes MILAB-4521 work-id", "passed": true, "evidence": "work-id: MILAB-4521 in frontmatter"},
+    {"text": "Content includes acceptance criteria with checkbox states ([ ] and [x])", "passed": true, "evidence": "3x [ ] and 1x [x] visible in output"}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}
+}

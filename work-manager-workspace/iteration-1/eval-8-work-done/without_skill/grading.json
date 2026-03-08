@@ -1,0 +1,14 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified the file"},
+    {"text": "Changes frontmatter from status: active to status: done", "passed": true, "evidence": "Frontmatter shows 'status: done'"},
+    {"text": "Adds completed: 2026-03-08 field to frontmatter", "passed": false, "evidence": "No 'completed:' field in frontmatter — only status changed"},
+    {"text": "Appends 'Work marked done' entry to Progress Log with today's date", "passed": true, "evidence": "'2026-03-08: Work marked done — all acceptance criteria met'"},
+    {"text": "Confirms to user that work note was updated and status is done", "passed": true, "evidence": "Inferred from task completion notification"}
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.80},
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "Baseline also checked ALL 4 acceptance criteria as [x] which is incorrect — the task was only to mark done, not to fabricate completion of unfinished criteria. This is a significant behavioral difference vs the skill version which correctly left criteria unchanged."
+  }
+}

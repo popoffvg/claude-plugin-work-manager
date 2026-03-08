@@ -1,0 +1,12 @@
+{
+  "eval_id": 4,
+  "eval_name": "work-recall-synthesize",
+  "prompt": "where was I? what should I do next?",
+  "assertions": [
+    {"text": "Reads _summary.md from cwd", "type": "behavior"},
+    {"text": "Summarizes the description mentioning auth timeout or 504 errors", "type": "content"},
+    {"text": "Shows acceptance criteria status — 1 of 4 completed", "type": "content"},
+    {"text": "Mentions last activity from progress log (integration test on 2026-03-07)", "type": "content"},
+    {"text": "Suggests a concrete next step based on remaining criteria", "type": "output"}
+  ]
+}

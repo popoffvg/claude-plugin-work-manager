@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "agent",
+        "prompt": "Check if `_summary.md` exists in the current working directory. If it does NOT exist, do nothing and stop immediately.\n\nIf it exists, read it. Then analyze the user's prompt that was just submitted.\n\nDetermine if the prompt contains NEW requirements — things not already covered by the existing plan steps or acceptance criteria. Look for:\n1. New features or behaviors requested\n2. New constraints or edge cases mentioned\n3. Changes to scope or direction\n4. Bug reports or issues that imply new criteria\n\nIgnore:\n- Questions, clarifications, or discussion\n- Requests that already match existing plan steps or criteria\n- Meta-requests (commit, PR, status, recall)\n- Vague or ambiguous statements\n\nIf NEW requirements are detected:\n- Add new acceptance criteria as `- [ ] <criterion>` under **Acceptance Criteria**\n- Add new plan steps under **Plan** if the requirement implies implementation work not yet planned\n- Append to **Progress Log**: `- YYYY-MM-DD: Added requirement: <brief summary>`\n- Do NOT remove or reorder existing entries\n- Keep additions concise and factual\n\nIf no new requirements detected, do nothing and stop."
+      }
+    ],
+    "Stop": [
+      {
+        "type": "agent",
+        "prompt": "Check if `_summary.md` exists in the current working directory. If it does NOT exist, do nothing and stop immediately.\n\nIf it exists, read it and analyze the conversation that just happened.\n\n## Part 1: Progress logging\n\nDetermine:\n1. Was any meaningful progress made? (code written, bug fixed, feature added, test passed, file created, refactoring done)\n2. Were any acceptance criteria completed?\n3. Were any plan steps finished?\n\nIf progress WAS made:\n- Append a concise entry to the **Progress Log** section: `- YYYY-MM-DD: <what was done>`\n- Check off any completed acceptance criteria: `- [ ]` -> `- [x]`\n- Keep entries factual and brief (1 line each)\n- Use today's date\n\n## Part 2: Knowledge capture\n\nScan the conversation for substantial knowledge worth preserving:\n- Architecture decisions or insights\n- Research findings (how an API works, library behavior, etc.)\n- Debugging conclusions (root cause found, workaround discovered)\n- Design decisions with rationale\n- Edge cases or gotchas discovered\n\nIf significant knowledge is found:\n1. Ensure `.work/` directory exists (create if missing)\n2. Check existing `.work/*.md` files — does this topic already have a file?\n3. If yes: append under a new dated section\n4. If no: create `.work/<slug>.md` with the knowledge\n5. Update `_summary.md` **Knowledge** section with link: `- [<topic>](.work/<slug>.md)`\n6. Update `.work/README.md` index if it exists\n\n## Part 3: Structure review\n\nIf `.work/` directory exists and has files:\n- Any file over 100 lines? Note it in progress log as needing split\n- Is `_summary.md` Knowledge section in sync with `.work/` contents? Fix if not\n\nBe conservative — only log clear, concrete progress and capture genuinely valuable knowledge. Skip trivial or uncertain items."
+      }
+    ]
+  }
+}

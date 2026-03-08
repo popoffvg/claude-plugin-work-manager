@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified the file"},
+    {"text": "Changes frontmatter from status: active to status: done", "passed": true, "evidence": "Frontmatter shows 'status: done'"},
+    {"text": "Adds completed: 2026-03-08 field to frontmatter", "passed": true, "evidence": "'completed: 2026-03-08' present in frontmatter"},
+    {"text": "Appends 'Work marked done' entry to Progress Log with today's date", "passed": true, "evidence": "'2026-03-08: Work marked done'"},
+    {"text": "Confirms to user that work note was updated and status is done", "passed": true, "evidence": "Response: 'MILAB-4521...is now status: done, completed 2026-03-08'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}
+}

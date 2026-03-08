@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Reads _summary.md from cwd", "passed": true, "evidence": "Read and modified the file"},
+    {"text": "Appends new entry to Progress Log with today's date (2026-03-08)", "passed": true, "evidence": "'2026-03-08: Implemented configurable timeout via GATEWAY_AUTH_TIMEOUT env var, default 30s'"},
+    {"text": "Progress entry mentions configurable timeout or GATEWAY_AUTH_TIMEOUT", "passed": true, "evidence": "Entry contains 'GATEWAY_AUTH_TIMEOUT env var'"},
+    {"text": "Checks off 'Gateway timeout for auth endpoints is configurable' criterion ([ ] changed to [x])", "passed": true, "evidence": "Criterion now shows [x]"},
+    {"text": "Does NOT modify other criteria — remaining unchecked criteria stay unchecked", "passed": true, "evidence": "Retry and load test criteria remain [ ]"},
+    {"text": "Confirms what was logged and which criteria were checked off", "passed": true, "evidence": "Response confirms: 'Checked off: Acceptance criterion: Gateway timeout...' and 'Plan step 1'"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

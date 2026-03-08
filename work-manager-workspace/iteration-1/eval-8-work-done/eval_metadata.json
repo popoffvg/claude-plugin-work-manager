@@ -1,0 +1,12 @@
+{
+  "eval_id": 8,
+  "eval_name": "work-done-mark-complete",
+  "prompt": "mark this work done",
+  "assertions": [
+    {"text": "Reads _summary.md from cwd", "type": "behavior"},
+    {"text": "Changes frontmatter from status: active to status: done", "type": "output"},
+    {"text": "Adds completed: 2026-03-08 field to frontmatter", "type": "output"},
+    {"text": "Appends 'Work marked done' entry to Progress Log with today's date", "type": "output"},
+    {"text": "Confirms to user that work note was updated and status is done", "type": "output"}
+  ]
+}

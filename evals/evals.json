@@ -1,0 +1,141 @@
+{
+  "skill_name": "work-manager",
+  "evals": [
+    {
+      "id": 1,
+      "skill": "work-start",
+      "prompt": "start work",
+      "expected_output": "Detects branch name, parses work ID, asks for description and acceptance criteria, writes _summary.md with correct frontmatter and sections",
+      "setup": "cd to a git repo on branch MILAB-4521-fix-auth-timeout with no existing _summary.md",
+      "expectations": [
+        "_summary.md is created in cwd",
+        "Frontmatter contains work-id: MILAB-4521",
+        "Frontmatter contains branch: MILAB-4521-fix-auth-timeout",
+        "Frontmatter contains status: active",
+        "Frontmatter contains created: with today's date",
+        "File has sections: Description, Plan, Acceptance Criteria, Progress Log",
+        "Progress Log has initial entry with today's date"
+      ]
+    },
+    {
+      "id": 2,
+      "skill": "work-start",
+      "prompt": "start work",
+      "expected_output": "Detects existing _summary.md and shows summary instead of creating new one",
+      "files": ["evals/files/_summary.md"],
+      "setup": "cd to a git repo that already has _summary.md (use fixture file)",
+      "expectations": [
+        "Does NOT overwrite existing _summary.md",
+        "Shows user a summary of existing work",
+        "Mentions work-id MILAB-4521 in output"
+      ]
+    },
+    {
+      "id": 3,
+      "skill": "work-status",
+      "prompt": "work status",
+      "expected_output": "Reads and displays raw content of _summary.md",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Reads _summary.md from cwd",
+        "Displays the raw file content to user",
+        "Content includes MILAB-4521 work-id",
+        "Content includes acceptance criteria with checkbox states"
+      ]
+    },
+    {
+      "id": 4,
+      "skill": "work-recall",
+      "prompt": "where was I? what should I do next?",
+      "expected_output": "Synthesizes work status with description, plan position, criteria status, and suggests next step",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Reads _summary.md from cwd",
+        "Summarizes the description (auth timeout / 504 errors)",
+        "Shows acceptance criteria with 1 of 4 done",
+        "Mentions last activity from progress log (integration test)",
+        "Suggests a concrete next step (e.g., implement retry logic or make timeout configurable)"
+      ]
+    },
+    {
+      "id": 5,
+      "skill": "work-recall",
+      "prompt": "work recall --raw",
+      "expected_output": "Displays raw file content without synthesis",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Displays raw _summary.md content",
+        "Does NOT synthesize or summarize",
+        "Full frontmatter is visible",
+        "Full Progress Log entries are visible"
+      ]
+    },
+    {
+      "id": 6,
+      "skill": "work-update",
+      "prompt": "update work: implemented configurable timeout via GATEWAY_AUTH_TIMEOUT env var, default 30s",
+      "expected_output": "Appends progress entry, checks off matching acceptance criterion",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Reads _summary.md from cwd",
+        "Appends new entry to Progress Log with today's date",
+        "Progress entry mentions configurable timeout",
+        "Checks off 'Gateway timeout for auth endpoints is configurable' criterion ([ ] -> [x])",
+        "Does NOT modify other criteria",
+        "Confirms what was logged and which criteria were checked"
+      ]
+    },
+    {
+      "id": 7,
+      "skill": "work-update",
+      "prompt": "log progress",
+      "expected_output": "No argument provided — asks user what was done before updating",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Reads _summary.md from cwd",
+        "Asks user what progress was made (does not invent progress)",
+        "Does NOT write to file before getting user input"
+      ]
+    },
+    {
+      "id": 8,
+      "skill": "work-done",
+      "prompt": "mark this work done",
+      "expected_output": "Updates status to done, adds completion date, appends progress entry",
+      "files": ["evals/files/_summary.md"],
+      "expectations": [
+        "Reads _summary.md from cwd",
+        "Changes frontmatter status: active -> status: done",
+        "Adds completed: field with today's date to frontmatter",
+        "Appends 'Work marked done' to Progress Log",
+        "Confirms work note updated"
+      ]
+    },
+    {
+      "id": 9,
+      "skill": "work-done",
+      "prompt": "finish work",
+      "expected_output": "No _summary.md found — tells user and suggests start work",
+      "setup": "cwd has no _summary.md",
+      "expectations": [
+        "Reports that no work note was found",
+        "Suggests running 'start work' or similar",
+        "Does NOT create any files"
+      ]
+    },
+    {
+      "id": 10,
+      "skill": "work-pr",
+      "prompt": "create PRs for my repos",
+      "expected_output": "Discovers repos, checks for unpushed commits, runs gh pr create for qualifying repos, reports table",
+      "setup": "cwd contains go.work with 'use ./svc-auth' and 'use ./lib-common'; svc-auth has unpushed commits, lib-common does not",
+      "expectations": [
+        "Reads go.work to discover repo directories",
+        "Checks each repo for unpushed commits",
+        "Runs gh pr create for repos with unpushed commits",
+        "Skips repos with no local commits",
+        "Reports results in a table format with repo, branch, PR URL/status"
+      ]
+    }
+  ]
+}
