@@ -19,7 +19,8 @@ Manages work lifecycle: create, track, and complete tasks.
 
 - Work note: `_summary.md` **in the current working directory**
 - Read/write work files directly — no delegation to other agents
-- If `_summary.md` not found locally, search `~/ctx` via QMD (`collection: "ctx"`) for project context before giving up
+- If `_summary.md` not found locally, search QMD (`collection: "ctx"`) for project context before giving up
+- On first use, verify settings file exists at `~/.claude/work-manager.local.md`. If missing, ask the user to configure it (see plugin README). Read `qmd_collection` from its YAML frontmatter (default: `ctx`).
 
 ## Routing
 

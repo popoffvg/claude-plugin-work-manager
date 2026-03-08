@@ -10,6 +10,39 @@ Work lifecycle management plugin for [Claude Code](https://docs.anthropic.com/en
 - **Requirement detection**: User prompt hook automatically adds new requirements mentioned mid-session
 - **Multi-repo PR creation**: Discovers all repos with unpushed commits and creates PRs
 
+## Setup
+
+### 1. Install the plugin
+
+```bash
+claude plugin install popoffvg/claude-plugin-work-manager
+```
+
+### 2. Create the settings file
+
+Create `~/.claude/work-manager.local.md` with your configuration:
+
+```yaml
+---
+qmd_collection: ctx
+---
+```
+
+**This file is required.** The plugin uses it to know which QMD collection to search when recalling work context from a different directory.
+
+### 3. Verify
+
+Start a new Claude Code session, checkout a feature branch, and run `/work start`. The plugin should detect your branch name and prompt you for work details.
+
+| Setting | Required | Description |
+|---------|----------|-------------|
+| `qmd_collection` | No | QMD collection name for context search (default: `ctx`) |
+
+## Requirements
+
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+- [QMD MCP server](https://github.com/nicobailey/qmd) — for recalling work context across directories (optional but recommended)
+
 ## Commands
 
 | Command | Description |
@@ -79,12 +112,6 @@ repo-root/
 | Progress logger | `Stop` | Logs progress, checks criteria, captures knowledge |
 
 Both hooks only activate when `_summary.md` exists in the current directory.
-
-## Installation
-
-```bash
-claude plugin install popoffvg/claude-plugin-work-manager
-```
 
 ## License
 
