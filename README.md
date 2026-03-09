@@ -4,9 +4,9 @@ Work lifecycle management plugin for [Claude Code](https://docs.anthropic.com/en
 
 ## Features
 
-- **Task lifecycle**: Start -> work -> update -> done -> PR, all tracked in `_summary.md`
+- **Three-phase workflow**: research → plan → implement, with allowed back-transitions
 - **Auto-progress logging**: Session end hook captures what was accomplished and checks off criteria
-- **Auto-knowledge capture**: Hooks detect architecture decisions, debugging findings, and research results — saving them to `.work/` files
+- **Auto-knowledge capture**: Hooks detect architecture decisions, debugging findings, and research results — saving them to `_memory/` files
 - **Requirement detection**: User prompt hook automatically adds new requirements mentioned mid-session
 - **Multi-repo PR creation**: Discovers all repos with unpushed commits and creates PRs
 
@@ -47,18 +47,41 @@ Start a new Claude Code session, checkout a feature branch, and run `/work start
 
 | Command | Description |
 |---------|-------------|
-| `/work start` | Initialize a work session — creates `_summary.md` and `.work/` structure |
+| `/work start` | Initialize a work session — creates `_summary.md` and `_memory/` structure |
 | `/work status` | Show current work summary |
 | `/work recall [topic]` | Re-orient to current work with dynamic knowledge loading |
 | `/work recall --deep` | Load everything for comprehensive context |
-| `/work update <message>` | Log progress and/or capture knowledge |
+| `/work update <message>` | Log progress, capture knowledge, or transition phase |
 | `/work done` | Mark work as complete |
 | `/work pr` | Create PRs for all repos with unpushed commits |
 | `/work help` | Show usage guide |
 
 ## How It Works
 
-### Starting Work
+### Phases
+
+Work progresses through three phases, tracked in `_summary.md` frontmatter (`phase:`):
+
+| Phase | Purpose | Can go to |
+|-------|---------|-----------|
+| **research** | Collect context, explore codebase, gather requirements | plan |
+| **plan** | Build task list, write acceptance criteria, detail approach | implement, research |
+| **implement** | Make edits, write code, run tests | research, plan |
+
+**Writing rules:**
+- **research + plan**: save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
+- **implement**: write results and implementation log to `_memory/`
+
+**Transitions require explicit user confirmation** — hooks may suggest a transition but never auto-apply it. Use `/work update move to <phase>` to transition.
+
+**Triggers for transition:**
+- **research → plan**: enough context collected, ready to structure the approach
+- **plan → implement**: task list and acceptance criteria written, ready to code
+- **plan → research**: discovered unknowns during planning
+- **implement → plan**: scope changed, need to revise task list
+- **implement → research**: hit something unexpected, need to explore
+
+### Starting work
 
 ```
 git checkout -b MILAB-1234-fix-auth-timeout
@@ -66,21 +89,23 @@ git checkout -b MILAB-1234-fix-auth-timeout
 ```
 
 1. Detects work-id from branch name (e.g., `MILAB-1234`)
-2. Collaborates on description, acceptance criteria, and implementation plan
-3. Creates `_summary.md` (compact index) and `.work/` directory (detailed knowledge)
+2. Collaborates on description and implementation plan
+3. Creates `_summary.md` (compact index) and `_memory/` directory (detailed knowledge)
+4. Sets initial phase to **research**
 
-### During Work
+### During work
 
 **Automatic** (via hooks):
-- `UserPromptSubmit` hook detects new requirements in your messages and adds them to criteria/plan
-- `Stop` hook logs progress, checks off completed criteria, and captures knowledge to `.work/` files
+- `UserPromptSubmit` hook detects new requirements and adds them to criteria/plan
+- `Stop` hook logs progress, captures phase-appropriate knowledge to `_memory/`, and suggests phase transitions when work doesn't match the current phase
 
 **Manual**:
+- `/work update move to plan` — transition to plan phase
 - `/work update fixed the auth timeout by increasing Redis TTL` — logs progress
-- `/work recall` — synthesizes current state, next steps, relevant knowledge
-- `/work recall auth` — loads specific topic from `.work/`
+- `/work recall` — synthesizes current state, phase, next steps, relevant knowledge
+- `/work recall auth` — loads specific topic from `_memory/`
 
-### Finishing Work
+### Finishing work
 
 ```
 /work done    # marks status: done, verifies criteria
@@ -92,7 +117,7 @@ git checkout -b MILAB-1234-fix-auth-timeout
 ```
 repo-root/
   _summary.md           # Compact index: plan, criteria, progress, links
-  .work/
+  _memory/
     README.md           # Knowledge index and structure rules
     auth-flow.md        # Topic: how auth works
     db-schema.md        # Topic: database decisions
@@ -100,7 +125,7 @@ repo-root/
 ```
 
 **Rules**:
-- `_summary.md` is an index only — links to detailed `.work/` files
+- `_summary.md` is an index only — links to detailed `_memory/` files
 - One file per topic, kept under 100 lines (auto-split when growing)
 - Structure reviewed on every update and session end
 
