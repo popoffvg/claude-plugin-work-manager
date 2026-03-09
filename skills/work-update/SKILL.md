@@ -4,7 +4,7 @@ description: >
   This skill should be used when the user says "update work", "log progress",
   "check off criteria", "update summary", "mark step done", "save knowledge",
   "document finding", "note decision".
-  Update work note, manage knowledge files, and review knowledge structure.
+  Update work note, manage work notes, and review notes structure.
 argument-hint: [progress message]
 ---
 
@@ -14,8 +14,8 @@ argument-hint: [progress message]
 
 1. Read `_summary.md` in cwd
 2. If not found — tell user, suggest `start work`
-3. Read `_memory/README.md` to understand current knowledge structure
-4. List files in `_memory/` to see existing knowledge
+3. Read `_notes/README.md` to understand current notes structure
+4. List files in `_notes/` to see existing work notes
 
 ## Step 2: Determine update type
 
@@ -23,8 +23,8 @@ From the argument or conversation, classify:
 
 - **Phase transition** — user says "move to plan", "start implementing", "need more research", etc.
 - **Progress log** — simple status update (e.g. "fixed the auth bug")
-- **Knowledge capture** — substantial finding, decision, or research (e.g. "the auth flow works via JWT with refresh tokens stored in Redis")
-- **Both** — progress that includes significant knowledge
+- **Work note capture** — substantial finding, decision, or research (e.g. "the auth flow works via JWT with refresh tokens stored in Redis")
+- **Both** — progress that includes significant findings
 
 ## Step 3: Handle phase transition (if applicable)
 
@@ -55,16 +55,16 @@ If transition is not allowed, tell the user and show valid transitions for curre
 - Check off completed acceptance criteria: `- [ ]` -> `- [x]`
 - Mark completed plan steps accordingly
 
-## Step 5: Capture knowledge (if applicable)
+## Step 5: Capture work notes (if applicable)
 
-When the update contains **substantial knowledge** (architecture insight, research finding, debugging conclusion, design decision, API behavior, edge case discovery):
+When the update contains **substantial findings** (architecture insight, research finding, debugging conclusion, design decision, API behavior, edge case discovery):
 
-1. **Check existing files** in `_memory/` — does this topic already have a file?
+1. **Check existing files** in `_notes/` — does this topic already have a file?
 2. **If yes**: append to existing file under a new section with date
-3. **If no**: create new `_memory/<slug>.md` with the knowledge
-4. **Update links**: add/update entry in `_summary.md` **Knowledge** section and `_memory/README.md` index
+3. **If no**: create new `_notes/<slug>.md` with the findings
+4. **Update links**: add/update entry in `_summary.md` **Work Notes** section and `_notes/README.md` index
 
-Knowledge file template:
+Work note template:
 ```markdown
 # <Topic Title>
 
@@ -77,15 +77,15 @@ Created: YYYY-MM-DD
 
 ## Step 6: Review structure
 
-After every update, review the knowledge structure:
+After every update, review the notes structure:
 
-- Any `_memory/` file over 100 lines? → Split into focused subtopics
+- Any `_notes/` file over 100 lines? → Split into focused subtopics
 - Any closely related files that should merge? → Consolidate
-- Is `_summary.md` **Knowledge** section up to date with all `_memory/` files?
-- Is `_memory/README.md` index accurate?
+- Is `_summary.md` **Work Notes** section up to date with all `_notes/` files?
+- Is `_notes/README.md` index accurate?
 
 Report any structural changes made.
 
 ## Step 7: Confirm
 
-Report: what was logged, which criteria checked off, which knowledge files created/updated, any structural changes.
+Report: what was logged, which criteria checked off, which work notes created/updated, any structural changes.

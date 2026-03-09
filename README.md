@@ -6,7 +6,7 @@ Work lifecycle management plugin for [Claude Code](https://docs.anthropic.com/en
 
 - **Three-phase workflow**: research → plan → implement, with allowed back-transitions
 - **Auto-progress logging**: Session end hook captures what was accomplished and checks off criteria
-- **Auto-knowledge capture**: Hooks detect architecture decisions, debugging findings, and research results — saving them to `_memory/` files
+- **Auto work notes capture**: Hooks detect architecture decisions, debugging findings, and research results — saving them to `_notes/` files
 - **Requirement detection**: User prompt hook automatically adds new requirements mentioned mid-session
 - **Multi-repo PR creation**: Discovers all repos with unpushed commits and creates PRs
 
@@ -47,7 +47,7 @@ Start a new Claude Code session, checkout a feature branch, and run `/work start
 
 | Command | Description |
 |---------|-------------|
-| `/work start` | Initialize a work session — creates `_summary.md` and `_memory/` structure |
+| `/work start` | Initialize a work session — creates `_summary.md` and `_notes/` structure |
 | `/work status` | Show current work summary |
 | `/work recall [topic]` | Re-orient to current work with dynamic knowledge loading |
 | `/work recall --deep` | Load everything for comprehensive context |
@@ -69,8 +69,8 @@ Work progresses through three phases, tracked in `_summary.md` frontmatter (`pha
 | **implement** | Make edits, write code, run tests | research, plan |
 
 **Writing rules:**
-- **research + plan**: save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
-- **implement**: write results and implementation log to `_memory/`
+- **research + plan**: save **every** finding immediately to `_notes/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
+- **implement**: write results and implementation log to `_notes/`
 
 **Transitions require explicit user confirmation** — hooks may suggest a transition but never auto-apply it. Use `/work update move to <phase>` to transition.
 
@@ -90,20 +90,20 @@ git checkout -b MILAB-1234-fix-auth-timeout
 
 1. Detects work-id from branch name (e.g., `MILAB-1234`)
 2. Collaborates on description and implementation plan
-3. Creates `_summary.md` (compact index) and `_memory/` directory (detailed knowledge)
+3. Creates `_summary.md` (compact index) and `_notes/` directory (detailed work notes)
 4. Sets initial phase to **research**
 
 ### During work
 
 **Automatic** (via hooks):
 - `UserPromptSubmit` hook detects new requirements and adds them to criteria/plan
-- `Stop` hook logs progress, captures phase-appropriate knowledge to `_memory/`, and suggests phase transitions when work doesn't match the current phase
+- `Stop` hook logs progress, captures phase-appropriate work notes to `_notes/`, and suggests phase transitions when work doesn't match the current phase
 
 **Manual**:
 - `/work update move to plan` — transition to plan phase
 - `/work update fixed the auth timeout by increasing Redis TTL` — logs progress
 - `/work recall` — synthesizes current state, phase, next steps, relevant knowledge
-- `/work recall auth` — loads specific topic from `_memory/`
+- `/work recall auth` — loads specific topic from `_notes/`
 
 ### Finishing work
 
@@ -112,20 +112,20 @@ git checkout -b MILAB-1234-fix-auth-timeout
 /work pr      # creates PRs across all affected repos
 ```
 
-## Knowledge Structure
+## Work Notes Structure
 
 ```
 repo-root/
   _summary.md           # Compact index: plan, criteria, progress, links
-  _memory/
-    README.md           # Knowledge index and structure rules
+  _notes/
+    README.md           # Work notes index and structure rules
     auth-flow.md        # Topic: how auth works
     db-schema.md        # Topic: database decisions
     perf-findings.md    # Topic: performance research
 ```
 
 **Rules**:
-- `_summary.md` is an index only — links to detailed `_memory/` files
+- `_summary.md` is an index only — links to detailed `_notes/` files
 - One file per topic, kept under 100 lines (auto-split when growing)
 - Structure reviewed on every update and session end
 
@@ -134,7 +134,7 @@ repo-root/
 | Hook | Event | What It Does |
 |------|-------|-------------|
 | Requirements detector | `UserPromptSubmit` | Adds new requirements to criteria and plan |
-| Progress logger | `Stop` | Logs progress, checks criteria, captures knowledge |
+| Progress logger | `Stop` | Logs progress, checks criteria, captures work notes |
 
 Both hooks only activate when `_summary.md` exists in the current directory.
 

@@ -17,23 +17,23 @@ Display the following usage guide to the user:
 
 | Command | What it does |
 |---------|-------------|
-| `/work start` | Begin new work — creates `_summary.md` + `_memory/` knowledge directory |
+| `/work start` | Begin new work — creates `_summary.md` + `_notes/` work notes directory |
 | `/work status` | Show current work status and progress |
 | `/work recall` | Re-orient: what was I doing, what's next? |
-| `/work recall --deep` | Full synthesis including all knowledge files |
-| `/work recall <topic>` | Show specific knowledge file (e.g. `work recall auth-flow`) |
-| `/work update` | Log progress, capture knowledge, review structure |
+| `/work recall --deep` | Full synthesis including all work notes |
+| `/work recall <topic>` | Show specific work note (e.g. `work recall auth-flow`) |
+| `/work update` | Log progress, capture work notes, review structure |
 | `/work done` | Mark work complete, check acceptance criteria |
 | `/work pr` | Create a PR from current work context |
 | `/work help` | This guide |
 
-### Knowledge Hierarchy
+### Work Notes Hierarchy
 
 ```
 repo-root/
-  _summary.md          # Index — compact overview, links to _memory/
-  _memory/
-    README.md           # Knowledge index and structure rules
+  _summary.md          # Index — compact overview, links to _notes/
+  _notes/
+    README.md           # Work notes index and structure rules
     auth-flow.md        # Topic: how auth works
     db-schema.md        # Topic: database design decisions
     perf-findings.md    # Topic: performance research
@@ -41,8 +41,8 @@ repo-root/
 ```
 
 **Rules:**
-- `_summary.md` = index only (plan, criteria, progress log, knowledge links)
-- `_memory/*.md` = one file per topic, under 100 lines each
+- `_summary.md` = index only (plan, criteria, progress log, work notes links)
+- `_notes/*.md` = one file per topic, under 100 lines each
 - Topics split automatically when they grow too large
 - Structure is reviewed on every update and session end
 
@@ -70,8 +70,8 @@ research → plan → implement
 | **implement** | Make edits, write code, run tests | research, plan |
 
 **Writing rules:**
-- **research + plan**: save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
-- **implement**: write results and implementation log to `_memory/`
+- **research + plan**: save **every** finding immediately to `_notes/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
+- **implement**: write results and implementation log to `_notes/`
 
 Transition via `/work update move to plan` (or similar phrasing).
 
@@ -89,12 +89,12 @@ Transition via `/work update move to plan` (or similar phrasing).
 ### How hooks work
 
 - **UserPromptSubmit**: detects new requirements → updates plan/criteria in `_summary.md`
-- **Stop**: logs progress, captures knowledge into `_memory/` files, reviews structure
+- **Stop**: logs progress, captures work notes into `_notes/` files, reviews structure
 
 ### Tips
 
-- Knowledge is captured automatically — the Stop hook extracts insights from each session
+- Work notes are captured automatically — the Stop hook extracts findings from each session
 - Use `/work update` to manually save important findings mid-session
-- `_memory/` files are topic-based, not chronological — same topic accumulates in one file
+- `_notes/` files are topic-based, not chronological — same topic accumulates in one file
 - Edit any file directly if you need to fix something fast
 - `/work recall --deep` loads everything for full context (uses more tokens)

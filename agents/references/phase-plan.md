@@ -10,19 +10,19 @@ Build a concrete task list, write acceptance criteria, detail the implementation
 - Break work into ordered task list with concrete steps
 - Identify files and functions to modify
 - Design interfaces, data flows, or API changes
-- Document decisions and trade-offs in `_memory/`
+- Document decisions and trade-offs in `_notes/`
 - Estimate scope and identify risks
 
 ## Writing rules
 
-Save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each decision, trade-off, or design detail gets written as it happens.
+Save **every** finding immediately to `_notes/` — don't accumulate, don't wait for session end. Each decision, trade-off, or design detail gets written as it happens.
 
-File naming: `_memory/plan-<topic-slug>.md`
+File naming: `_notes/plan-<topic-slug>.md`
 
 Examples:
-- "chose gRPC over REST because of streaming requirement" → `_memory/plan-api-design.md`
-- "need to modify 3 packages: auth, session, middleware" → `_memory/plan-scope.md`
-- "risk: migration may break existing clients" → `_memory/plan-risks.md`
+- "chose gRPC over REST because of streaming requirement" → `_notes/plan-api-design.md`
+- "need to modify 3 packages: auth, session, middleware" → `_notes/plan-scope.md`
+- "risk: migration may break existing clients" → `_notes/plan-risks.md`
 
 ## Transitions
 
@@ -49,7 +49,7 @@ During planning, analyze how to split implementation work across parallel subage
 1. Group tasks by repo/language
 2. For each language group, check if tasks can be further split (independent modules, no shared types)
 3. Document the agent split in `_summary.md` Plan section: which agent handles which tasks, which files, which repo
-4. Each agent gets the relevant `_memory/` context for its scope
+4. Each agent gets the relevant `_notes/` context for its scope
 
 ### Example
 

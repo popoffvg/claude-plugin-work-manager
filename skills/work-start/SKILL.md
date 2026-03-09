@@ -3,7 +3,7 @@ name: work-start
 description: >
   This skill should be used when the user says "start work", "work start",
   "begin work", "initialize work". Start new work — detect branch, gather details,
-  plan, save work note with hierarchical knowledge structure.
+  plan, save work note with hierarchical work notes structure.
 ---
 
 # work-start
@@ -39,11 +39,11 @@ Proceed only after explicit user approval.
 Scan the workspace for repos (look for subdirectories with `.git`).
 For each repo, detect primary language from file extensions, `go.mod`, `package.json`, `Cargo.toml`, etc.
 
-## Step 5: Create knowledge structure
+## Step 5: Create work notes structure
 
-Create `_memory/` directory in cwd. This holds all detailed knowledge files.
+Create `_notes/` directory in cwd. This holds all work notes files.
 
-Write `_summary.md` in cwd (the **index** — keep it compact, link to `_memory/` files):
+Write `_summary.md` in cwd (the **index** — keep it compact, link to `_notes/` files):
 
 ```markdown
 ---
@@ -70,8 +70,8 @@ Phases: **research** → plan → implement
 | implement | Make edits, write code, run tests | research, plan |
 
 **Writing rules:**
-- **research + plan**: save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
-- **implement**: write results and implementation log into `_memory/` files
+- **research + plan**: save **every** finding immediately to `_notes/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
+- **implement**: write results and implementation log into `_notes/` files
 
 > Update `phase:` in frontmatter and this section header when transitioning.
 
@@ -98,37 +98,37 @@ Phases: **research** → plan → implement
 - [ ] <criterion 1>
 - [ ] <criterion 2>
 
-## Knowledge
+## Work Notes
 
-<!-- Links to detail files in _memory/ — added as knowledge grows -->
+<!-- Links to detail files in _notes/ — added as work progresses -->
 
 ## Progress Log
 
 - YYYY-MM-DD: Work created
 ```
 
-Write `_memory/README.md`:
+Write `_notes/README.md`:
 
 ```markdown
-# Knowledge Structure
+# Work Notes Structure
 
 Work: <name> (<work-id>)
 
 ## Index
 
-<!-- Auto-maintained list of knowledge files -->
+<!-- Auto-maintained list of work notes files -->
 
 ## Structure Rules
 
 - Each file covers ONE topic (architecture decision, research finding, debugging session, etc.)
 - Filename: `<short-slug>.md` (e.g. `auth-flow.md`, `db-schema.md`, `perf-findings.md`)
 - Keep files under 100 lines — split if larger
-- _summary.md links here; this file indexes all _memory/ content
+- _summary.md links here; this file indexes all _notes/ work notes
 ```
 
 ## Step 6: Report and explain rules
 
-Print the work file path, `_memory/` directory, detected repos with languages, and confirm structure created.
+Print the work file path, `_notes/` directory, detected repos with languages, and confirm structure created.
 
 Then explain the work rules to the user:
 
@@ -137,9 +137,9 @@ Then explain the work rules to the user:
 
 Your work has three phases:
 
-1. **research** (current) — collect context, explore codebase. Every finding gets saved to `_memory/` immediately.
-2. **plan** — build task list, write acceptance criteria. Every decision gets saved to `_memory/` immediately.
-3. **implement** — write code, run tests. Results and implementation log go to `_memory/`.
+1. **research** (current) — collect context, explore codebase. Every finding gets saved to `_notes/` immediately.
+2. **plan** — build task list, write acceptance criteria. Every decision gets saved to `_notes/` immediately.
+3. **implement** — write code, run tests. Results and implementation log go to `_notes/`.
 
 Phase transitions:
 - research → plan (enough context collected)

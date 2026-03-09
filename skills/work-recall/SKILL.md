@@ -20,22 +20,22 @@ argument-hint: [--raw]
 
 **If `--raw`**: display raw `_summary.md` content and stop.
 
-**If `topic` provided**: find and display the matching `_memory/<topic>.md` file. Fuzzy-match against filenames if exact match fails.
+**If `topic` provided**: find and display the matching `_notes/<topic>.md` file. Fuzzy-match against filenames if exact match fails.
 
-**If `--deep`**: read `_summary.md` AND all `_memory/*.md` files, provide a comprehensive synthesis.
+**If `--deep`**: read `_summary.md` AND all `_notes/*.md` files, provide a comprehensive synthesis.
 
-**Default mode** (no flags): dynamically load relevant knowledge — see Step 3.
+**Default mode** (no flags): dynamically load relevant work notes — see Step 3.
 
-## Step 3: Dynamic knowledge loading
+## Step 3: Dynamic work notes loading
 
 1. Read `_summary.md` to get plan, criteria, and progress log
-2. List all files in `_memory/` directory
+2. List all files in `_notes/` directory
 3. Determine **current focus** from:
    - Last 3-5 progress log entries (what was done recently)
    - Next unchecked acceptance criterion
    - Next incomplete plan step
-4. **Select relevant `_memory/` files** — read only files whose topic relates to the current focus. Skip files about completed/unrelated topics.
-5. If no `_memory/` files are relevant or none exist, proceed with `_summary.md` only.
+4. **Select relevant `_notes/` files** — read only files whose topic relates to the current focus. Skip files about completed/unrelated topics.
+5. If no `_notes/` files are relevant or none exist, proceed with `_summary.md` only.
 
 ## Step 4: Synthesize and report
 
@@ -43,8 +43,8 @@ argument-hint: [--raw]
 - **What**: description + goal
 - **Repos**: list repos with languages (check if repo list changed since last session)
 - **Current focus**: what you're working on now (derived from phase + plan + progress)
-- **Relevant knowledge**: key points from dynamically loaded `_memory/` files
+- **Relevant work notes**: key points from dynamically loaded `_notes/` files
 - **Acceptance criteria**: done vs pending
 - **Last activity**: last 3-5 progress log entries
-- **Suggested next step**: based on phase, progress, remaining criteria, and loaded knowledge. Suggest phase transition if current phase work seems complete.
-- **Other knowledge available**: list unloaded `_memory/` files by name (so user can request them)
+- **Suggested next step**: based on phase, progress, remaining criteria, and loaded work notes. Suggest phase transition if current phase work seems complete.
+- **Other work notes available**: list unloaded `_notes/` files by name (so user can request them)

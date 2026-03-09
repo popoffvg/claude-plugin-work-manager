@@ -9,7 +9,7 @@ Each subagent receives these instructions along with its assigned tasks:
 ### Scope
 
 - Work only on assigned tasks, files, and repo
-- Read relevant `_memory/` files for context before starting
+- Read relevant `_notes/` files for context before starting
 - Follow the task list order
 
 ### Activities
@@ -20,14 +20,14 @@ Each subagent receives these instructions along with its assigned tasks:
 
 ### Writing rules
 
-Write **results and implementation log** to `_memory/`. Focus on what was done and outcomes, not exploration.
+Write **results and implementation log** to `_notes/`. Focus on what was done and outcomes, not exploration.
 
-File naming: `_memory/impl-<topic-slug>.md`
+File naming: `_notes/impl-<topic-slug>.md`
 
 Examples:
-- "added retry logic to gRPC client, 3 attempts with exponential backoff" → `_memory/impl-grpc-retry.md`
-- "test revealed race condition in session cleanup — fixed with mutex" → `_memory/impl-session-race.md`
-- "API endpoint added: POST /v1/auth/refresh, returns new token pair" → `_memory/impl-auth-endpoint.md`
+- "added retry logic to gRPC client, 3 attempts with exponential backoff" → `_notes/impl-grpc-retry.md`
+- "test revealed race condition in session cleanup — fixed with mutex" → `_notes/impl-session-race.md`
+- "API endpoint added: POST /v1/auth/refresh, returns new token pair" → `_notes/impl-auth-endpoint.md`
 
 ### Completion
 

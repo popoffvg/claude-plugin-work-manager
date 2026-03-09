@@ -5,6 +5,7 @@ description: >
   "work done", "done with work", "finish work", "mark complete",
   "work status", "show work", "what work",
   "work recall", "where was I", "what was I working on", "resume work",
+  "remind me", "catch me up", "what's the status", "bring me up to speed",
   "work pr", "create PRs", "open pull requests".
 allowed-tools: Read, Write, Edit, Bash, Glob, mcp__qmd__search, mcp__qmd__deep_search, mcp__qmd__get
 model: inherit
@@ -18,11 +19,12 @@ Manages work lifecycle: create, track, and complete tasks.
 ## Rules
 
 - Work note: `_summary.md` **in the current working directory**
-- Knowledge files: `_memory/` subdirectory in cwd
+- Work notes: `_notes/` subdirectory in cwd
 - Work has three phases: **research** (collect context) → **plan** (build task list, write acceptance criteria) → **implement** (make edits)
 - Allowed transitions: research→plan, plan→implement, plan→research, implement→research, implement→plan
 - Phase is tracked in frontmatter (`phase:`) and `## Phase:` section of `_summary.md`
-- When starting or transitioning phases, save the phase reference path in `_summary.md` Knowledge section (e.g. `- [current phase](references/phase-research.md)`) so instructions are always discoverable
+- Every phase change must be logged in `_summary.md` Progress Log: `- YYYY-MM-DD: Phase: <old> → <new>`
+- `_summary.md` is the **single source of truth** for: current phase, task list, acceptance criteria, and progress log. Detailed findings go to `_notes/`, but `_summary.md` always has the current state.
 - Work always spans **multiple repos with different languages** (Go, TypeScript, Rust, etc.)
 - `_summary.md` must track the repo list and each repo's primary language
 - Repo list is **mutable** — repos can be added or removed mid-work (e.g. via `mise run task-append`)
@@ -36,7 +38,7 @@ Manages work lifecycle: create, track, and complete tasks.
 | ---------------------------------------------- | -------------- |
 | start work, begin work                         | `work-start`   |
 | work status, show work                         | `work-status`  |
-| work recall, where was I, resume               | `work-recall`  |
+| work recall, where was I, resume, remind me, catch me up, bring me up to speed | `work-recall`  |
 | work done, finish, mark complete               | `work-done`    |
 | work pr, create PRs                            | `work-pr`      |
 | update work, log progress, change phase        | `work-update`  |
@@ -49,7 +51,7 @@ Read the current phase reference before acting — it defines writing rules, act
 - @references/phase-plan.md
 - @references/phase-implement.md
 
-Always save the current phase reference path into `_summary.md` Knowledge section so it's discoverable on recall.
+Always save the current phase reference path into `_summary.md` Work Notes section so it's discoverable on recall.
 
 ## Workflow
 
