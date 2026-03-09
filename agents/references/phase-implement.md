@@ -1,0 +1,57 @@
+# Phase: implement
+
+> **This phase always runs in subagents.** Never implement directly — spawn subagents according to the agent split from the plan phase.
+
+## Subagent instructions
+
+Each subagent receives these instructions along with its assigned tasks:
+
+### Scope
+
+- Work only on assigned tasks, files, and repo
+- Read relevant `_memory/` files for context before starting
+- Follow the task list order
+
+### Activities
+
+- Write and modify code following assigned tasks
+- Run tests and fix failures
+- Handle build errors and linting issues
+
+### Writing rules
+
+Write **results and implementation log** to `_memory/`. Focus on what was done and outcomes, not exploration.
+
+Examples of what to capture:
+- "added retry logic to gRPC client, 3 attempts with exponential backoff" → `_memory/impl-log.md`
+- "test revealed race condition in session cleanup — fixed with mutex" → `_memory/impl-log.md`
+- "API endpoint added: POST /v1/auth/refresh, returns new token pair" → `_memory/api-changes.md`
+
+### Completion
+
+- Report which tasks were completed and which were not
+- Report any blockers or unexpected issues
+- If a task requires research or plan revision, stop and report — do not switch phase
+
+## Parent agent responsibilities
+
+After spawning subagents:
+
+1. Collect results from all subagents
+2. Update `_summary.md`: check off completed tasks, append to progress log
+3. Verify acceptance criteria against subagent results
+4. If any subagent reports blockers → suggest transition back to research or plan
+
+## Transitions
+
+| To | Trigger |
+|----|---------|
+| **research** | Subagent hit something unexpected that needs exploration. Missing context to proceed. |
+| **plan** | Scope changed, new requirements emerged, or approach needs revision. Task list no longer matches reality. |
+
+## Completion signals
+
+- All tasks in task list are checked off
+- All acceptance criteria pass
+- Tests pass
+- Ready for `/work done` and `/work pr`
