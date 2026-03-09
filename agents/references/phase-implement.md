@@ -22,10 +22,12 @@ Each subagent receives these instructions along with its assigned tasks:
 
 Write **results and implementation log** to `_memory/`. Focus on what was done and outcomes, not exploration.
 
-Examples of what to capture:
-- "added retry logic to gRPC client, 3 attempts with exponential backoff" → `_memory/impl-log.md`
-- "test revealed race condition in session cleanup — fixed with mutex" → `_memory/impl-log.md`
-- "API endpoint added: POST /v1/auth/refresh, returns new token pair" → `_memory/api-changes.md`
+File naming: `_memory/impl-<topic-slug>.md`
+
+Examples:
+- "added retry logic to gRPC client, 3 attempts with exponential backoff" → `_memory/impl-grpc-retry.md`
+- "test revealed race condition in session cleanup — fixed with mutex" → `_memory/impl-session-race.md`
+- "API endpoint added: POST /v1/auth/refresh, returns new token pair" → `_memory/impl-auth-endpoint.md`
 
 ### Completion
 
@@ -42,12 +44,16 @@ After spawning subagents:
 3. Verify acceptance criteria against subagent results
 4. If any subagent reports blockers → suggest transition back to research or plan
 
+## Mandatory return to plan
+
+If the user adds new requirements, tasks, or work scope during implement phase — **stop all subagents and return to plan phase immediately**. New work must be planned before it can be implemented. Do not attempt to absorb new requirements into running subagents.
+
 ## Transitions
 
 | To | Trigger |
 |----|---------|
+| **plan** | User adds new requirements, tasks, or work scope. Approach needs revision. Task list no longer matches reality. |
 | **research** | Subagent hit something unexpected that needs exploration. Missing context to proceed. |
-| **plan** | Scope changed, new requirements emerged, or approach needs revision. Task list no longer matches reality. |
 
 ## Completion signals
 

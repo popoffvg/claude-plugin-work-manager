@@ -17,10 +17,14 @@ Collect context, explore the codebase, gather requirements. Build understanding 
 
 Save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each discovery, decision, or piece of context gets written as it happens.
 
-Examples of what to capture:
-- "auth uses JWT with refresh tokens in Redis" → `_memory/auth-flow.md`
-- "pframes handles column mapping via axis tuples" → `_memory/pframes-model.md`
-- "tests require Docker for integration suite" → `_memory/test-setup.md`
+**One topic = one file.** Split knowledge into separate `.md` files by topic. Never dump multiple unrelated findings into a single file. If a file grows beyond one topic, split it.
+
+Examples:
+- "auth uses JWT with refresh tokens in Redis" → `_memory/research-auth-flow.md`
+- "pframes handles column mapping via axis tuples" → `_memory/research-pframes-model.md`
+- "tests require Docker for integration suite" → `_memory/research-test-setup.md`
+
+File naming: `_memory/research-<topic-slug>.md`
 
 ## Transitions
 

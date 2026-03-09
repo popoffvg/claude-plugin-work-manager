@@ -17,10 +17,12 @@ Build a concrete task list, write acceptance criteria, detail the implementation
 
 Save **every** finding immediately to `_memory/` — don't accumulate, don't wait for session end. Each decision, trade-off, or design detail gets written as it happens.
 
-Examples of what to capture:
-- "chose gRPC over REST because of streaming requirement" → `_memory/api-design.md`
-- "need to modify 3 packages: auth, session, middleware" → `_memory/scope.md`
-- "risk: migration may break existing clients" → `_memory/risks.md`
+File naming: `_memory/plan-<topic-slug>.md`
+
+Examples:
+- "chose gRPC over REST because of streaming requirement" → `_memory/plan-api-design.md`
+- "need to modify 3 packages: auth, session, middleware" → `_memory/plan-scope.md`
+- "risk: migration may break existing clients" → `_memory/plan-risks.md`
 
 ## Transitions
 
