@@ -1,15 +1,5 @@
 {
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "agent",
-            "prompt": "Check if `_notes/_summary.md` exists in the current working directory. If it does NOT exist, do nothing and stop immediately.\n\nIf it exists, read it. Then analyze the user's prompt that was just submitted.\n\nDetermine if the prompt contains NEW requirements — things not already covered by the existing plan steps or acceptance criteria. Look for:\n1. New features or behaviors requested\n2. New constraints or edge cases mentioned\n3. Changes to scope or direction\n4. Bug reports or issues that imply new criteria\n\nIgnore:\n- Questions, clarifications, or discussion\n- Requests that already match existing plan steps or criteria\n- Meta-requests (commit, PR, status, recall)\n- Vague or ambiguous statements\n\nIf NEW requirements are detected:\n- Add new acceptance criteria as `- [ ] <criterion>` under **Acceptance Criteria**\n- Add new plan steps under **Plan** if the requirement implies implementation work not yet planned\n- Append to `_notes/worklog.md`: `- YYYY-MM-DD: Added requirement: <brief summary>`\n- Do NOT remove or reorder existing entries\n- Keep additions concise and factual\n\nIf no new requirements detected, do nothing and stop."
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
