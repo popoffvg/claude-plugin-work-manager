@@ -1,0 +1,39 @@
+{
+  "name": "work-manager-marketplace",
+  "owner": {
+    "name": "popoffvg"
+  },
+  "metadata": {
+    "description": "Work lifecycle management plugin for Claude Code",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "work-manager",
+      "source": {
+        "source": "github",
+        "repo": "popoffvg/claude-plugin-work-manager"
+      },
+      "description": "Work lifecycle management — start, track, recall, complete, and PR creation for tasks. Three-phase workflow (research → plan → implement) with structural mode enforcement, auto-progress logging, and optional mise task workspace management.",
+      "version": "0.2.0",
+      "author": {
+        "name": "popoffvg"
+      },
+      "repository": "https://github.com/popoffvg/claude-plugin-work-manager",
+      "license": "MIT",
+      "keywords": [
+        "work-management",
+        "task-tracking",
+        "workflow",
+        "phases",
+        "progress-logging",
+        "knowledge-capture",
+        "multi-repo",
+        "git-worktrees",
+        "mise"
+      ],
+      "category": "productivity",
+      "strict": true
+    }
+  ]
+}
