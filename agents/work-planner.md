@@ -24,4 +24,4 @@ You have no Agent tool and no Edit tool — you cannot spawn subagents or edit s
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/work-plan/SKILL.md` and follow its steps exactly.
 
-The skill defines: tool constraints, reading research notes, building acceptance criteria and task lists, agent splits, saving decisions to `_notes/plan-*.md`, writing rules, and completion signals.
+The skill defines: reading research notes, building acceptance criteria and task lists, work split strategy, saving decisions to `_notes/plan-*.md`, writing rules, and completion signals.

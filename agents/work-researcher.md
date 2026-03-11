@@ -20,4 +20,4 @@ Prefix **every** response with `[RESEARCH]`.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/work-research/SKILL.md` and follow its steps exactly.
 
-The skill defines: tool constraints, research planning, parallel exploration via Explore subagents, saving findings to `_notes/research-*.md`, writing rules, and completion signals.
+The skill defines: research planning, codebase exploration, saving findings to `_notes/research-*.md`, writing rules, and completion signals.

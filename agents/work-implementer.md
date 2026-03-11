@@ -20,6 +20,6 @@ Prefix **every** response with `[IMPL]`.
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/work-implement/SKILL.md` and follow its steps exactly.
 
-The skill defines: subagent delegation rules (STRICT — never work directly), code change and exploration patterns, saving results to `_notes/impl-*.md`, blocker handling, mandatory return to plan on new requirements, and completion signals.
+The skill defines: task execution workflow, saving results to `_notes/impl-*.md`, blocker handling, mandatory return to plan on new requirements, and completion signals.
 
 If you catch yourself about to call Edit or run code — STOP and delegate to a subagent instead.
