@@ -1,0 +1,116 @@
+---
+name: work-research
+description: >
+  This skill should be used when the work-manager router delegates research-phase work
+  to the work-researcher agent. Provides the research workflow: topic planning, parallel
+  exploration via Explore subagents, saving findings to _notes/research-*.md, and
+  suggesting transition to plan phase.
+---
+
+# work-research
+
+Research phase workflow. Primary deliverable: `_notes/research-*.md` files with findings.
+
+## Hard tool constraints
+
+| Tool | Allowed usage |
+|------|--------------|
+| **Read** | Any file — source code, docs, configs |
+| **Glob** | File search |
+| **Grep** | Content search |
+| **Bash** | Read-only only: `git log`, `git show`, `git diff`, `ls`, `find`, `wc`, `file`. **NEVER** create, modify, or delete files. |
+| **Write** | **Only** `_notes/*.md` (including `_notes/_summary.md`). Never write to any other path. |
+| **Agent** | **Only** Explore subagents with `run_in_background: true`. Never spawn agents that edit code. |
+| **mcp__qmd__*** | Search knowledge base freely |
+
+## Step 1: Receive task from router
+
+Receive from work-manager:
+- The user's request
+- Current `_notes/_summary.md` content
+- List of existing `_notes/` files
+
+## Step 2: Plan research
+
+Break scope into independent topics. Present a numbered list:
+
+```
+[RESEARCH] I'd like to explore:
+1. Auth middleware in core/pl/pkg/auth/
+2. SDK auth client in core/platforma/sdk/
+3. Session storage in core/pl/pkg/session/
+
+Proceed? (y / n / adjust)
+```
+
+**Wait for user approval.** Do NOT start research until confirmed.
+
+## Step 3: Execute research
+
+For each topic, spawn an Explore subagent (`run_in_background: true`):
+
+```
+Agent(
+  subagent_type: "Explore",
+  run_in_background: true,
+  prompt: "Find <what> in <where>. Report: key files, patterns, relevant code."
+)
+```
+
+Run topics in parallel where possible.
+
+## Step 4: Save findings (PRIMARY DELIVERABLE)
+
+For each completed topic:
+
+1. Write findings to `_notes/research-<topic-slug>.md`
+2. Update `_notes/_summary.md` Work Notes section with link: `- [<topic>](research-<topic-slug>.md)`
+3. Then — and only then — summarize to the user
+
+File template:
+```markdown
+# Research: <Topic>
+
+Created: YYYY-MM-DD
+
+## Findings
+
+<what was discovered — files, patterns, behavior, architecture>
+
+## Key Files
+
+- `path/to/file.go:42` — description
+- `path/to/other.ts:15` — description
+
+## Open Questions
+
+- <anything unclear or needing deeper investigation>
+```
+
+## Step 5: Respond to user
+
+Summarize findings with references to `_notes/` files. Keep chat response concise — detailed content lives in the files.
+
+## Step 6: Suggest next research or transition
+
+If new areas emerged, propose them as a new numbered list.
+
+If research feels complete (can articulate the problem, know the repos, understand patterns, no major unknowns), suggest:
+```
+Research looks complete. When ready, use `/work update move to plan` to begin planning.
+```
+
+## Writing rules
+
+- **One topic = one file.** Never dump multiple unrelated findings into one file.
+- **File naming**: `_notes/research-<topic-slug>.md`
+- **Save immediately.** Write after each topic completes — don't accumulate.
+- **Max 100 lines per file.** Split if growing beyond.
+- **Update the index.** Every new file must be linked in `_notes/_summary.md` Work Notes section.
+
+## Completion signals
+
+- Can articulate the problem clearly
+- Know which repos/packages are involved
+- Understand existing patterns and constraints
+- No major unknowns remaining (or unknowns are identified and scoped)
