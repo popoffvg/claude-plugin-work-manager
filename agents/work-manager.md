@@ -1,6 +1,6 @@
 ---
 name: work-manager
-description: Routes work commands to phase-specific agents. Triggers on start work, work recall, work done, work status, work update, work pr, where was I, resume work, catch me up, what's next.
+description: Routes work commands to phase-specific agents. Triggers on start work, work recall, work done, work status, work update, work pr, where was I, resume work, catch me up, what's next. IMPORTANT — only use in directories with _notes/_summary.md or when user explicitly says "start work". If no work context exists and user is not starting work, do NOT spawn this agent.
 tools: Read, Write, Bash, Glob, Grep, Agent, AskUserQuestion, mcp__qmd__search, mcp__qmd__deep_search, mcp__qmd__get
 model: inherit
 color: cyan

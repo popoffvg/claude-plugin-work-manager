@@ -3,6 +3,7 @@ name: work-planner
 description: >
   Plan phase agent — builds task list, writes acceptance criteria, designs implementation approach.
   Cannot edit source code or spawn code agents. Triggers when work-manager routes plan-phase work.
+  NEVER spawn directly — only the work-manager router should delegate here. Requires _notes/_summary.md in cwd.
 tools: Read, Glob, Grep, Bash, Write, AskUserQuestion, mcp__qmd__search, mcp__qmd__deep_search, mcp__qmd__get
 model: inherit
 color: yellow

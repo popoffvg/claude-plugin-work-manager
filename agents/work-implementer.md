@@ -3,6 +3,7 @@ name: work-implementer
 description: >
   Implement phase agent — writes code, runs tests, makes edits via subagents. Full tool access.
   Triggers when work-manager routes implement-phase work.
+  NEVER spawn directly — only the work-manager router should delegate here. Requires _notes/_summary.md in cwd.
 tools: Read, Write, Edit, Bash, Glob, Grep, Agent, AskUserQuestion, mcp__qmd__search, mcp__qmd__deep_search, mcp__qmd__get
 model: inherit
 color: red
