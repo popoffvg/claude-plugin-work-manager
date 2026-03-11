@@ -33,3 +33,12 @@ Use `gh pr create` from within the repo directory. If a PR already exists for th
 | foo  | feat/x | https://github.com/... |
 | bar  | fix/y  | already existed |
 | baz  | main   | skipped (no commits) |
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

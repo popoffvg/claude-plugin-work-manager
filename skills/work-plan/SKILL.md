@@ -114,3 +114,12 @@ If unknowns surface during planning:
 - Task list is ordered with concrete file references
 - Work split is documented (which groups, which tasks, which repos)
 - No unresolved design questions blocking implementation
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

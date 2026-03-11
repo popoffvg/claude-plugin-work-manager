@@ -90,3 +90,12 @@ Research looks complete. When ready, use `/work update move to plan` to begin pl
 - Know which repos/packages are involved
 - Understand existing patterns and constraints
 - No major unknowns remaining (or unknowns are identified and scoped)
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

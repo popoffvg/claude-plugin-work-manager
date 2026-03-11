@@ -13,3 +13,12 @@ description: >
    - Frontmatter: `status: active` -> `status: done`, add `completed: YYYY-MM-DD`
    - Append to `_notes/worklog.md`: `- YYYY-MM-DD: Work marked done`
 4. Confirm: work note updated, status = done
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

@@ -187,3 +187,12 @@ Phase transitions:
 Transitions happen only when you say so — I'll never switch phase without your confirmation.
 Use `/work update move to <phase>` to transition.
 ```
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

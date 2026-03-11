@@ -372,3 +372,12 @@ Print a summary:
 3. Open the task folder, then `/work start` to begin tracking
 4. `/work help` for all commands
 ```
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

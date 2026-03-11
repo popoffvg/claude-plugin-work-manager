@@ -93,3 +93,12 @@ After all tasks complete:
 - All acceptance criteria pass
 - Tests pass
 - Ready for `/work done` and `/work pr`
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.

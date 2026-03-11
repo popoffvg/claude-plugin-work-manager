@@ -48,3 +48,12 @@ Based on `_notes/_summary.md` only (unless `--deep` was used):
 - **Acceptance criteria**: done vs pending
 - **Suggested next step**: based on phase, progress, remaining criteria
 - **Other work notes available**: list `_notes/` files by name (so user can request them with `work recall <topic>` or `--deep`)
+
+## MANDATORY: Update Notes
+
+**After completing ANY action in this skill, you MUST update `_notes/worklog.md`** with a timestamped entry describing what was done. Format:
+```
+- YYYY-MM-DD HH:MM: <action summary>
+```
+
+Never skip this step. Notes are the primary deliverable, not a side-effect.
