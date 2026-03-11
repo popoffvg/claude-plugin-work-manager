@@ -25,6 +25,7 @@ Display the following usage guide to the user:
 | `/work update` | Log progress, capture work notes, review structure |
 | `/work done` | Mark work complete, check acceptance criteria |
 | `/work pr` | Create a PR from current work context |
+| `/work install` | Guided setup — plugin, QMD, mise, task scripts, worktrunk |
 | `/work help` | This guide |
 
 ### Work Notes Hierarchy

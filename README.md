@@ -11,6 +11,48 @@ Work lifecycle management plugin for [Claude Code](https://docs.anthropic.com/en
 - **Auto work notes capture**: Hooks detect architecture decisions, debugging findings, and research results
 - **Requirement detection**: User prompt hook automatically adds new requirements mentioned mid-session
 - **Multi-repo PR creation**: Discovers all repos with unpushed commits and creates PRs
+- **Task workspace management** (optional): mise tasks for git worktree-based task isolation
+
+## Workflow
+
+### End-to-End: From Ticket to PR
+
+```
+1. Create workspace     mise run task           # interactive: pick repos, create worktrees
+                        cd tasks/MILAB-1234-fix-auth/
+
+2. Start tracking       /work start             # creates _notes/, detects branch, gathers scope
+
+3. Research phase       (ask questions, explore code)
+                        → auto-saves findings to _notes/research-*.md
+
+4. Plan phase           /work update move to plan
+                        → build task list, acceptance criteria in _notes/
+
+5. Implement phase      /work update move to implement
+                        → write code, run tests, results in _notes/impl-*.md
+
+6. Iterate              /work recall            # re-orient: what's done, what's next
+                        /work update <message>  # log progress, capture knowledge
+
+7. Finish               /work done              # verify criteria, mark complete
+                        /work pr                # create PRs across all affected repos
+
+8. Cleanup              mise run task-remove     # detach worktrees, delete task folder
+```
+
+### With vs Without Mise Tasks
+
+| Capability | With mise tasks | Without mise tasks |
+|------------|----------------|-------------------|
+| Branch management | Automatic worktrees per repo | Manual `git checkout -b` |
+| Repo isolation | Each task gets its own working tree | Shared working tree, stash to switch |
+| Task creation | `mise run task` (interactive fzf) | Create branch + `cd` + `/work start` |
+| Task cleanup | `mise run task-remove` (auto worktree detach) | Manual branch deletion |
+| MCP config | Auto-copied `.mcp.json` per worktree | Manual setup |
+| Multi-repo | Select multiple repos in one step | Set up each repo individually |
+
+Mise tasks are **optional** — the core plugin (`/work start`, `/work recall`, etc.) works in any git repo.
 
 ## Architecture
 
@@ -31,17 +73,76 @@ Phase agents:
 
 **Why notes as deliverable?** Telling an agent "do X, and also save findings" fails — saving becomes a skippable side-effect. Making the notes file the primary output means saving IS the work.
 
-## Setup
+### Task Workspace (mise)
 
-### 1. Install the plugin
-
-```bash
-claude plugin install popoffvg/claude-plugin-work-manager
+```
+workspace-root/                    # your multi-repo workspace
+├── .mise.toml                     # mise config with env vars + task_config
+├── mise-tasks/                    # task scripts (copied during /work install)
+│   ├── task                       # create/list/open/remove task workspaces
+│   ├── task-list                  # list and manage tasks
+│   ├── task-remove                # remove a task (detach worktrees + delete)
+│   └── task-append                # add repos to existing task
+├── repo-a/                        # your git repos
+├── repo-b/
+└── tasks/                         # task worktree folders
+    └── MILAB-1234-fix-auth/       # one folder per task (branch name)
+        ├── repo-a/                # git worktree
+        ├── repo-b/                # git worktree
+        ├── _notes/                # work notes (created by /work start)
+        │   ├── _summary.md
+        │   ├── worklog.md
+        │   └── research-*.md
+        └── _task.code-workspace   # IDE workspace file
 ```
 
-### 2. Create the settings file
+## Installation
 
-Create `~/.claude/work-manager.local.md` with your configuration:
+### Quick install
+
+```bash
+# Install the plugin
+claude plugin install popoffvg/claude-plugin-work-manager
+
+# Or from a local clone
+claude plugin add /path/to/work-manager
+```
+
+Then run `/work install` inside Claude Code for guided setup of all components (QMD, mise, task scripts).
+
+### Guided install (recommended)
+
+Start Claude Code and run:
+
+```
+/work install
+```
+
+This walks you through every component interactively:
+1. Plugin installation verification
+2. Settings file creation (`~/.claude/work-manager.local.md`)
+3. QMD MCP setup (semantic search for cross-session context)
+4. Mise installation and activation
+5. Task script deployment to your workspace
+6. `.mise.toml` configuration
+7. Dependency checks (fzf)
+8. Final verification
+
+### Manual install
+
+#### 1. Install the plugin
+
+```bash
+# From GitHub
+claude plugin install popoffvg/claude-plugin-work-manager
+
+# From local clone
+claude plugin add /path/to/work-manager
+```
+
+#### 2. Create the settings file
+
+Create `~/.claude/work-manager.local.md`:
 
 ```yaml
 ---
@@ -49,25 +150,82 @@ qmd_collection: ctx
 ---
 ```
 
-**This file is required.** The plugin uses it to know which QMD collection to search when recalling work context from a different directory.
+#### 3. QMD MCP (recommended)
 
-### 3. Verify
+QMD enables cross-session work context recall. Without it, `/work recall` only finds notes in the current directory.
 
-Start a new Claude Code session, checkout a feature branch, and run `/work start`. The plugin should detect your branch name and prompt you for work details.
+Add to `~/.claude/settings.json`:
 
-| Setting | Required | Description |
-|---------|----------|-------------|
-| `qmd_collection` | No | QMD collection name for context search (default: `ctx`) |
+```json
+{
+  "mcpServers": {
+    "qmd": {
+      "type": "stdio",
+      "command": "qmd",
+      "args": ["mcp", "--collection", "ctx", "--root", "~/ctx"]
+    }
+  },
+  "permissions": {
+    "allow": [
+      "mcp__qmd__search", "mcp__qmd__vector_search", "mcp__qmd__deep_search",
+      "mcp__qmd__get", "mcp__qmd__multi_get", "mcp__qmd__status"
+    ]
+  }
+}
+```
+
+Create the context directory: `mkdir -p ~/ctx/insights`
+
+#### 4. Mise tasks (optional)
+
+Install mise, then copy task scripts to your workspace:
+
+```bash
+# Install mise
+brew install mise  # or: curl https://mise.run | sh
+
+# Copy task scripts
+cp -r ~/.claude/plugins/work-manager/assets/mise-tasks/ /path/to/workspace/mise-tasks/
+chmod +x /path/to/workspace/mise-tasks/*
+```
+
+Add to your workspace `.mise.toml`:
+
+```toml
+[env]
+MIL_WORKSPACE_ROOT = "{{config_root}}"
+MIL_TASKS_ROOT = "{{config_root}}/tasks"
+MIL_REPO_ROOTS = "{{config_root}}"
+
+[task_config]
+dir = "mise-tasks"
+```
+
+#### 5. Verify
+
+```bash
+mise task ls | grep task    # should show task, task-list, task-remove, task-append
+```
+
+Start Claude Code, checkout a feature branch, run `/work start`.
 
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
-- [QMD MCP server](https://github.com/nicobailey/qmd) — for recalling work context across directories (optional but recommended)
+| Component | Required | Purpose |
+|-----------|----------|---------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Yes | Plugin host |
+| [QMD MCP](https://github.com/nicobailey/qmd) | Recommended | Cross-session context recall |
+| [mise](https://mise.jdx.dev/) | Optional | Task workspace management with worktrees |
+| [worktrunk](https://worktrunk.dev) (`wt`) | For mise tasks | Git worktree management CLI |
+| [fzf](https://github.com/junegunn/fzf) | For mise tasks | Interactive repo/task selection |
+
+**Permission**: Add `"Read(~/.claude/plugins/**)"` to `permissions.allow` in `~/.claude/settings.json`.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
+| `/work install` | Guided setup — plugin, QMD, mise, task scripts |
 | `/work start` | Initialize a work session — creates `_notes/` with `_summary.md` and work notes |
 | `/work status` | Show current work summary |
 | `/work recall [topic]` | Re-orient to current work with dynamic knowledge loading |
@@ -92,7 +250,13 @@ Start a new Claude Code session, checkout a feature branch, and run `/work start
 ### Starting work
 
 ```
-git checkout -b MILAB-1234-fix-auth-timeout
+# With mise tasks (recommended for multi-repo)
+mise run task                  # creates worktrees, opens IDE
+cd tasks/MILAB-1234-fix-auth/
+/work start
+
+# Without mise tasks
+git checkout -b MILAB-1234-fix-auth
 /work start
 ```
 
@@ -120,20 +284,21 @@ The router (`work-manager`) reads phase from `_notes/_summary.md` and delegates:
 ### Finishing work
 
 ```
-/work done    # marks status: done, verifies criteria
-/work pr      # creates PRs across all affected repos
+/work done              # marks status: done, verifies criteria
+/work pr                # creates PRs across all affected repos
+mise run task-remove    # cleanup worktrees (if using mise)
 ```
 
 ## Work Notes Structure
 
 ```
-repo-root/
-  _notes/
-    _summary.md         # Compact index: plan, criteria, progress, links
-    README.md           # Work notes index and structure rules
-    research-auth.md    # Research: how auth works
-    plan-api-design.md  # Plan: API design decision
-    impl-auth-ep.md     # Impl: auth endpoint changes
+_notes/
+  _summary.md         # Compact index: plan, criteria, progress, links
+  README.md           # Work notes index and structure rules
+  worklog.md          # Append-only progress log
+  research-auth.md    # Research: how auth works
+  plan-api-design.md  # Plan: API design decision
+  impl-auth-ep.md     # Impl: auth endpoint changes
 ```
 
 **Rules**:

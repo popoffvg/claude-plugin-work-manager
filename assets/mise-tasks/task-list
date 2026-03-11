@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#MISE description="List, open, or remove task workspaces"
+
+set -euo pipefail
+
+WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TASKS_ROOT="$WORKSPACE_ROOT/tasks"
+SURF="/Users/popoffvg/.codeium/windsurf/bin/surf"
+INSIGHTS_ROOT="$HOME/ctx/insights/_tasks"
+
+# --- Build task list ---
+if [ ! -d "$TASKS_ROOT" ] || [ -z "$(ls -A "$TASKS_ROOT" 2>/dev/null)" ]; then
+  echo "No task workspaces found in $TASKS_ROOT"
+  exit 0
+fi
+
+task_entries=""
+while IFS= read -r task_folder; do
+  [ -z "$task_folder" ] && continue
+  name=$(basename "$task_folder")
+  repo_count=$(find "$task_folder" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+  modified=$(stat -f "%Sm" -t "%Y-%m-%d" "$task_folder" 2>/dev/null || echo "unknown")
+  task_entries="${task_entries}${name}  (${repo_count} repos, ${modified})\n"
+done < <(find "$TASKS_ROOT" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+
+# --- Select task ---
+selected=$(echo -e "$task_entries" | fzf --prompt="Select task> " --height=40%)
+[ -z "$selected" ] && exit 0
+
+branch=$(echo "$selected" | sed 's/  .*//')
+task_folder="$TASKS_ROOT/$branch"
+task_id=$(echo "$branch" | grep -oE '^[A-Z]+-[0-9]+' || echo "$branch")
+
+# --- Select action ---
+action=$(printf "open\nremove\ncancel" | fzf --prompt="Action for ${branch}> " --height=20%)
+
+case "$action" in
+  open)
+    echo "Opening $task_folder"
+    "$SURF" "$task_folder" &
+    ;;
+  remove)
+    echo "Repos with worktrees:"
+    while IFS= read -r repo_dir; do
+      rel="${repo_dir#"$task_folder"/}"
+      repo_path="$WORKSPACE_ROOT/$rel"
+      echo "  $rel"
+      if [ -d "$repo_path/.git" ]; then
+        git -C "$repo_path" worktree remove "$repo_dir" --force 2>/dev/null \
+          && echo "    worktree removed" \
+          || echo "    failed to remove worktree (may need manual cleanup)"
+      fi
+    done < <(find "$task_folder" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+
+    rm -rf "$task_folder"
+    echo "Removed task folder: $task_folder"
+
+    ctx_summary="$INSIGHTS_ROOT/$task_id/_summary.md"
+    if [ -f "$ctx_summary" ]; then
+      echo "" >> "$ctx_summary"
+      echo "**Status:** removed ($(date +%Y-%m-%d))" >> "$ctx_summary"
+      echo "Updated context: marked removed"
+    fi
+    ;;
+  cancel|"")
+    echo "Cancelled"
+    ;;
+esac

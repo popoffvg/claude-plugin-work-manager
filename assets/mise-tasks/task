@@ -1,0 +1,249 @@
+#!/usr/bin/env bash
+#MISE description="Manage task workspaces: list, open, create, or remove"
+#USAGE arg "<task_id>" help="Task ID (e.g. MILAB-1234)" default=""
+#USAGE arg "<context>" help="Context slug (e.g. fix-resource-leak)" default=""
+
+set -euo pipefail
+
+WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TASKS_ROOT="$WORKSPACE_ROOT/tasks"
+SURF="/Users/popoffvg/.codeium/windsurf/bin/surf"
+MCP_JSON="$HOME/.claude/skills/task-start/assets/.mcp.json"
+
+task_id="${usage_task_id:-}"
+context="${usage_context:-}"
+
+# --- Helpers ---
+
+discover_repos() {
+  find "$WORKSPACE_ROOT" -maxdepth 2 -name ".git" -type d 2>/dev/null \
+    | sed 's|/\.git$||' \
+    | while read -r repo_path; do
+        rel="${repo_path#"$WORKSPACE_ROOT"/}"
+        [[ "$rel" == tasks* ]] && continue
+        printf "%s\n" "$rel"
+      done \
+    | sort
+}
+
+open_task_folder() {
+  local folder="$1"
+  echo "Opening folder: $folder"
+  "$SURF" "$folder" &
+}
+
+remove_task() {
+  local branch="$1"
+  local task_folder="$TASKS_ROOT/$branch"
+  local task_id
+  task_id=$(echo "$branch" | grep -oE '^[A-Z]+-[0-9]+' || echo "$branch")
+
+  echo "Removing task: $branch"
+  while IFS= read -r repo_dir; do
+    rel="${repo_dir#"$task_folder"/}"
+    repo_path="$WORKSPACE_ROOT/$rel"
+    echo "  $rel"
+    if [ -d "$repo_path/.git" ]; then
+      git -C "$repo_path" worktree remove "$repo_dir" --force 2>/dev/null \
+        && echo "    worktree removed" \
+        || echo "    failed to remove worktree (may need manual cleanup)"
+    fi
+  done < <(find "$task_folder" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+
+  rm -rf "$task_folder"
+  echo "Removed task folder: $task_folder"
+
+  task_md="$task_folder/_notes/_summary.md"
+  if [ -f "$task_md" ]; then
+    echo "Task note was at: $task_md (removed with folder)"
+  fi
+}
+
+create_task() {
+  local task_id="$1" context="$2"
+  local branch="${task_id}-${context}"
+  local task_folder="$TASKS_ROOT/$branch"
+
+  if [ -d "$task_folder" ]; then
+    echo "Task folder already exists: $task_folder"
+    open_task_folder "$task_folder"
+    return
+  fi
+
+  echo "Select repos for task (TAB to pick, ENTER to confirm):"
+  selected_repos=$(discover_repos | fzf --multi --prompt="Repos> " --height=60%)
+
+  if [ -z "$selected_repos" ]; then
+    echo "No repos selected, aborting"
+    exit 1
+  fi
+
+  mkdir -p "$task_folder"
+  echo "Created task folder: $task_folder"
+
+  while IFS= read -r rel; do
+    repo_path="$WORKSPACE_ROOT/$rel"
+    worktree_path="$task_folder/$rel"
+
+    [ ! -d "$repo_path/.git" ] && echo "  SKIP $rel (not a git repo)" && continue
+
+    mkdir -p "$(dirname "$worktree_path")"
+
+    if git -C "$repo_path" show-ref --verify --quiet "refs/heads/$branch" 2>/dev/null; then
+      git -C "$repo_path" worktree add "$worktree_path" "$branch"
+      echo "  $rel: worktree -> existing branch $branch"
+    else
+      git -C "$repo_path" worktree add -b "$branch" "$worktree_path"
+      echo "  $rel: worktree -> new branch $branch"
+    fi
+
+    if [ -f "$MCP_JSON" ]; then
+      cp "$MCP_JSON" "$worktree_path/.mcp.json"
+      echo "  $rel: .mcp.json copied"
+    fi
+  done <<< "$selected_repos"
+
+  # Generate workspace file
+  ws_file="$task_folder/_task.code-workspace"
+  ws_folders=""
+  while IFS= read -r rel; do
+    [ -n "$ws_folders" ] && ws_folders="$ws_folders,"
+    ws_folders="$ws_folders
+    {\"path\": \"$rel\"}"
+  done <<< "$selected_repos"
+  # Add _notes to workspace
+  ws_folders="$ws_folders,
+    {\"path\": \"_notes\"}"
+
+  cat > "$ws_file" <<WSEOF
+{
+  "folders": [$ws_folders
+  ],
+  "settings": {}
+}
+WSEOF
+  echo "Created workspace: $ws_file"
+
+  # Detect language per repo
+  detect_lang() {
+    local rpath="$1"
+    if [ -f "$rpath/go.mod" ]; then echo "Go"
+    elif [ -f "$rpath/Cargo.toml" ]; then echo "Rust"
+    elif [ -f "$rpath/package.json" ]; then echo "TypeScript"
+    elif [ -f "$rpath/build.gradle" ] || [ -f "$rpath/build.gradle.kts" ]; then echo "Java/Kotlin"
+    elif [ -f "$rpath/pyproject.toml" ] || [ -f "$rpath/setup.py" ]; then echo "Python"
+    else echo "—"
+    fi
+  }
+
+  # Generate repos table
+  repos_table=""
+  while IFS= read -r rel; do
+    lang=$(detect_lang "$task_folder/$rel")
+    repos_table="${repos_table}| ${rel} | ${lang} | |\n"
+  done <<< "$selected_repos"
+
+  # Create knowledge directory
+  mkdir -p "$task_folder/_notes"
+
+  cat > "$task_folder/_notes/_summary.md" <<EOF
+---
+type: task
+task-id: ${task_id}
+name: ${context}
+branch: ${branch}
+workspace: _task.code-workspace
+created: $(date +%Y-%m-%d)
+status: active
+---
+
+# Task: ${task_id} ${context}
+
+## Description
+
+<!-- fill in -->
+
+## Repos
+
+| Repo | Language | Notes |
+|------|----------|-------|
+$(echo -e "$repos_table")
+> Repo list is mutable — repos may be added/removed during work (e.g. \`mise run task-append\`).
+
+## Plan
+
+<!-- fill in -->
+
+## Acceptance Criteria
+
+- [ ] <!-- fill in -->
+
+## Knowledge
+
+> **Rule**: dump every insight to \`_notes/\` immediately as you discover it — don't wait until the end of a session.
+
+<!-- Links to detail files in _notes/ — added as knowledge grows -->
+
+## Progress Log
+
+- $(date +%Y-%m-%d): Task created
+EOF
+
+  echo "Created knowledge dir: $task_folder/_notes/"
+  echo "Created task note: $task_folder/_notes/_summary.md"
+  open_task_folder "$task_folder"
+}
+
+# --- If args provided, go straight to create ---
+if [ -n "$task_id" ] && [ -n "$context" ]; then
+  create_task "$task_id" "$context"
+  exit 0
+fi
+
+# --- Interactive: show task list with [NEW] ---
+mkdir -p "$TASKS_ROOT"
+
+task_entries="[NEW] Create task workspace"
+while IFS= read -r task_folder; do
+  [ -z "$task_folder" ] && continue
+  name=$(basename "$task_folder")
+  repo_count=$(find "$task_folder" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+  modified=$(stat -f "%Sm" -t "%Y-%m-%d" "$task_folder" 2>/dev/null || echo "unknown")
+  task_entries="${task_entries}\n${name}  (${repo_count} repos, ${modified})"
+done < <(find "$TASKS_ROOT" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+
+selected=$(echo -e "$task_entries" | fzf --prompt="Select task> " --height=40%)
+[ -z "$selected" ] && exit 0
+
+if [ "$selected" = "[NEW] Create task workspace" ]; then
+  printf "Task ID (e.g. MILAB-1234): "
+  read -r task_id
+  printf "Context slug (e.g. fix-resource-leak): "
+  read -r context
+
+  if [ -z "$task_id" ] || [ -z "$context" ]; then
+    echo "Error: both task_id and context are required"
+    exit 1
+  fi
+
+  create_task "$task_id" "$context"
+  exit 0
+fi
+
+# --- Existing task selected: action menu ---
+branch=$(echo "$selected" | sed 's/  .*//')
+task_folder="$TASKS_ROOT/$branch"
+
+action=$(printf "open\nremove\ncancel" | fzf --prompt="Action for ${branch}> " --height=20%)
+
+case "$action" in
+  open)
+    open_task_folder "$task_folder"
+    ;;
+  remove)
+    remove_task "$branch"
+    ;;
+  cancel|"")
+    echo "Cancelled"
+    ;;
+esac

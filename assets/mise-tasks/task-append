@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+#MISE description="Add repos to an existing task workspace (worktree-based)"
+
+set -euo pipefail
+
+WORKSPACE_ROOT="${MIL_WORKSPACE_ROOT:?MIL_WORKSPACE_ROOT not set — check .mise.toml}"
+TASKS_ROOT="${MIL_TASKS_ROOT:?MIL_TASKS_ROOT not set — check .mise.toml}"
+IFS=',' read -ra REPO_ROOTS <<< "${MIL_REPO_ROOTS:?MIL_REPO_ROOTS not set — check .mise.toml}"
+MCP_JSON="$HOME/.claude/skills/task-start/assets/.mcp.json"
+CALLER_CWD="${MISE_ORIGINAL_CWD:-$PWD}"
+
+# --- Detect task folder from caller's CWD ---
+if [[ "$CALLER_CWD" != "$TASKS_ROOT"/* ]]; then
+  echo "Error: not inside a task folder ($TASKS_ROOT/...)"
+  echo "  CWD: $CALLER_CWD"
+  exit 1
+fi
+
+rel="${CALLER_CWD#"$TASKS_ROOT"/}"
+branch="${rel%%/*}"
+task_folder="$TASKS_ROOT/$branch"
+
+if [ ! -d "$task_folder" ]; then
+  echo "Error: task folder not found: $task_folder"
+  exit 1
+fi
+
+echo "Task: $branch"
+
+# --- Discover all repos ---
+discover_repos() {
+  for root in "${REPO_ROOTS[@]}"; do
+    [ -d "$root" ] || continue
+    find "$root" -maxdepth 2 -name ".git" -type d 2>/dev/null \
+      | sed 's|/\.git$||' \
+      | while read -r repo_path; do
+          rel="${repo_path#"$WORKSPACE_ROOT"/}"
+          [[ "$rel" == tasks* ]] && continue
+          printf "%s\n" "$rel"
+        done
+  done | sort -u
+}
+
+# --- Find repos already in task ---
+existing_repos() {
+  find "$task_folder" -maxdepth 2 -name ".git" -type f 2>/dev/null \
+    | sed "s|/\.git$||" \
+    | while read -r wt_path; do
+        echo "${wt_path#"$task_folder"/}"
+      done \
+    | sort
+}
+
+# --- Filter out existing repos ---
+available=$(comm -23 <(discover_repos) <(existing_repos))
+
+if [ -z "$available" ]; then
+  echo "All repos are already in this task"
+  exit 0
+fi
+
+# --- Select repos via fzf ---
+echo "Select repos to add (TAB to pick, ENTER to confirm):"
+selected_repos=$(echo "$available" | fzf --multi --prompt="Repos> " --height=60%)
+
+if [ -z "$selected_repos" ]; then
+  echo "No repos selected, aborting"
+  exit 1
+fi
+
+# --- Create worktrees ---
+while IFS= read -r rel; do
+  repo_path="$WORKSPACE_ROOT/$rel"
+  worktree_path="$task_folder/$rel"
+
+  [ ! -d "$repo_path/.git" ] && echo "  SKIP $rel (not a git repo)" && continue
+
+  mkdir -p "$(dirname "$worktree_path")"
+
+  if git -C "$repo_path" show-ref --verify --quiet "refs/heads/$branch" 2>/dev/null; then
+    git -C "$repo_path" worktree add "$worktree_path" "$branch"
+    echo "  $rel: worktree -> existing branch $branch"
+  else
+    git -C "$repo_path" worktree add -b "$branch" "$worktree_path"
+    echo "  $rel: worktree -> new branch $branch"
+  fi
+
+  if [ -f "$MCP_JSON" ]; then
+    cp "$MCP_JSON" "$worktree_path/.mcp.json"
+    echo "  $rel: .mcp.json copied"
+  fi
+done <<< "$selected_repos"
+
+# --- Regenerate workspace file ---
+ws_file="$task_folder/_task.code-workspace"
+ws_folders=""
+while IFS= read -r rel; do
+  [ -n "$ws_folders" ] && ws_folders="$ws_folders,"
+  ws_folders="$ws_folders
+    {\"path\": \"$rel\"}"
+done < <(existing_repos; echo "$selected_repos")
+
+cat > "$ws_file" <<WSEOF
+{
+  "folders": [$ws_folders
+  ],
+  "settings": {}
+}
+WSEOF
+echo "Updated workspace: $ws_file"
+
+echo "Done. Added $(echo "$selected_repos" | wc -l | tr -d ' ') repo(s) to $branch"

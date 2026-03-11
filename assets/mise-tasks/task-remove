@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#MISE description="Remove a task: detach worktrees then delete the task folder"
+#USAGE arg "<branch>" help="Task branch/folder name (e.g. MILAB-1234-fix-auth). Leave empty for fzf picker." default=""
+
+set -euo pipefail
+
+WORKSPACE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TASKS_ROOT="$WORKSPACE_ROOT/tasks"
+
+branch="${usage_branch:-}"
+
+# --- Pick task via fzf if not provided ---
+if [ -z "$branch" ]; then
+  existing=$(find "$TASKS_ROOT" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | xargs -I{} basename {} 2>/dev/null || true)
+
+  if [ -z "$existing" ]; then
+    echo "No task workspaces found in $TASKS_ROOT"
+    exit 0
+  fi
+
+  branch=$(echo "$existing" | fzf --prompt="Remove task> " --height=40%)
+  [ -z "$branch" ] && exit 0
+fi
+
+task_folder="$TASKS_ROOT/$branch"
+
+if [ ! -d "$task_folder" ]; then
+  echo "Error: task folder not found: $task_folder"
+  exit 1
+fi
+
+echo "Task folder: $task_folder"
+echo ""
+
+# --- Remove worktrees ---
+while IFS= read -r worktree_path; do
+  rel="${worktree_path#"$task_folder"/}"
+  repo_path="$WORKSPACE_ROOT/$rel"
+
+  if [ ! -d "$repo_path/.git" ]; then
+    echo "  SKIP $rel (no .git in $repo_path)"
+    continue
+  fi
+
+  if git -C "$repo_path" worktree remove "$worktree_path" --force 2>/dev/null; then
+    echo "  removed worktree: $rel"
+  else
+    echo "  WARN: could not remove worktree for $rel (manual cleanup may be needed)"
+  fi
+done < <(find "$task_folder" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+
+# --- Delete task folder ---
+rm -rf "$task_folder"
+echo ""
+echo "Deleted: $task_folder"
