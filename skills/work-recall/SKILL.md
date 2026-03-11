@@ -12,7 +12,12 @@ argument-hint: [--raw]
 ## Step 1: Load index
 
 1. Read `_notes/_summary.md` in cwd
-2. If not found — tell user no work context found, suggest `/work start`
+2. If not found, also check `_summary.md` in cwd (legacy layout)
+3. If still not found — scan immediate subdirectories for `_notes/_summary.md` or `_summary.md`:
+   - Use `Glob` with pattern `*/_notes/_summary.md` and `*/_summary.md`
+   - If exactly one found — use it (set that subdirectory as the work root for remaining steps)
+   - If multiple found — list them and ask user which work context to load
+   - If none found — tell user no work context found, suggest `/work start`
 
 ## Step 2: Mode selection
 

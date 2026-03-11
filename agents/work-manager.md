@@ -97,8 +97,12 @@ After the phase agent completes, relay its response to the user.
 ### Fallback: no _summary.md
 
 If `_notes/_summary.md` doesn't exist in cwd:
-1. Search QMD (`collection: "ctx"`) for work context
-2. If nothing found, suggest: "No active work found. Use `/work start` to begin."
+1. Check `_summary.md` in cwd (legacy layout)
+2. Scan immediate subdirectories for `_notes/_summary.md` or `_summary.md` (task workspace pattern)
+   - If exactly one found — use it as the work root
+   - If multiple found — list them and ask user which work context to use
+3. If still nothing, search QMD (`collection: "ctx"`) for work context
+4. If nothing found, suggest: "No active work found. Use `/work start` to begin."
 
 ## Settings
 

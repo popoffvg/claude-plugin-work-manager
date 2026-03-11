@@ -17,9 +17,10 @@ Run `git branch --show-current` in cwd. Parse result:
 
 ## Step 2: Check for existing work note
 
-Read `_notes/_summary.md` in cwd.
+Read `_notes/_summary.md` in cwd. Also check `_summary.md` (legacy layout).
+If neither found, scan immediate subdirectories for `_notes/_summary.md` or `_summary.md`.
 
-If it exists, show the user a summary and stop — work already registered.
+If found, show the user a summary and stop — work already registered.
 
 ## Step 3: Gather scope from user
 
