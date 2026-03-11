@@ -21,15 +21,13 @@ argument-hint: [--raw]
 
 ## Step 2: Mode selection
 
-**If `--raw`**: display raw `_notes/_summary.md` content and stop.
+**If `--deep`**: read `_notes/_summary.md` AND all `_notes/*.md` files, provide a comprehensive synthesis — see Step 3.
 
 **If `topic` provided**: find and display the matching `_notes/<topic>.md` file. Fuzzy-match against filenames if exact match fails.
 
-**If `--deep`**: read `_notes/_summary.md` AND all `_notes/*.md` files, provide a comprehensive synthesis.
+**Default mode** (no flags, including `--raw`): display `_notes/_summary.md` content and synthesize — see Step 4.
 
-**Default mode** (no flags): dynamically load relevant work notes — see Step 3.
-
-## Step 3: Dynamic work notes loading
+## Step 3: Deep mode (--deep only)
 
 1. Read `_notes/_summary.md` to get plan and criteria, read `_notes/worklog.md` for progress log
 2. List all files in `_notes/` directory
@@ -40,24 +38,13 @@ argument-hint: [--raw]
 4. **Select relevant `_notes/` files** — read only files whose topic relates to the current focus. Skip files about completed/unrelated topics.
 5. If no `_notes/` files are relevant or none exist, proceed with `_notes/_summary.md` only.
 
-## Step 4: Identify active agent
+## Step 4: Synthesize and report
 
-Based on the `phase:` field from `_notes/_summary.md` frontmatter, note which agent handles the current phase:
+Based on `_notes/_summary.md` only (unless `--deep` was used):
 
-| Phase | Agent | Capabilities |
-|-------|-------|-------------|
-| research | **work-researcher** | Read-only exploration, saves to `_notes/research-*.md` |
-| plan | **work-planner** | Builds task list, writes to `_notes/_summary.md` and `_notes/plan-*.md` |
-| implement | **work-implementer** | Full tool access, spawns code subagents |
-
-## Step 5: Synthesize and report
-
-- **Phase**: current phase (research / plan / implement), active agent name, and allowed transitions
+- **Phase**: current phase (research / plan / implement) and allowed transitions
 - **What**: description + goal
-- **Repos**: list repos with languages (check if repo list changed since last session)
-- **Current focus**: what you're working on now (derived from phase + plan + progress)
-- **Relevant work notes**: key points from dynamically loaded `_notes/` files
+- **Repos**: list repos with languages
 - **Acceptance criteria**: done vs pending
-- **Last activity**: last 3-5 progress log entries
-- **Suggested next step**: based on phase, progress, remaining criteria, and loaded work notes. Suggest phase transition if current phase work seems complete.
-- **Other work notes available**: list unloaded `_notes/` files by name (so user can request them)
+- **Suggested next step**: based on phase, progress, remaining criteria
+- **Other work notes available**: list `_notes/` files by name (so user can request them with `work recall <topic>` or `--deep`)
