@@ -1,41 +1,21 @@
 ---
 name: work-plan
 description: >
-  This skill should be used when the work-manager router delegates plan-phase work
-  to the work-planner agent. Provides the planning workflow: reading research notes,
-  building acceptance criteria, creating ordered task lists with agent splits, saving
-  design decisions to _notes/plan-*.md, and suggesting transition to implement phase.
+  This skill should be used when the current work phase is "plan".
+  Provides the planning workflow: reading research notes, building acceptance
+  criteria, creating ordered task lists with parallelization strategy, saving
+  design decisions to _notes/plan-*.md, and transition to implement phase.
 ---
 
 # work-plan
 
-Plan phase workflow. Primary deliverable: updated `_summary.md` with concrete plan and `_notes/plan-*.md` files with design decisions.
+Plan phase workflow. Primary deliverable: updated `_notes/_summary.md` with concrete plan and `_notes/plan-*.md` files with design decisions.
 
-## Hard tool constraints
+## Step 1: Read research
 
-| Tool | Allowed usage |
-|------|--------------|
-| **Read** | Any file — source code, docs, configs, `_notes/` |
-| **Glob** | File search |
-| **Grep** | Content search |
-| **Bash** | Read-only only: `git log`, `git show`, `git diff`, `ls`, `find`, `wc`, `file`. **NEVER** create, modify, or delete files. |
-| **Write** | **Only** `_notes/*.md` (including `_notes/_summary.md`). Never write to any other path. |
-| **mcp__qmd__*** | Search knowledge base freely |
+Read all `_notes/research-*.md` files. Summarize what is known before proposing a plan.
 
-No Agent tool and no Edit tool — cannot spawn subagents or edit source code.
-
-## Step 1: Receive task from router
-
-Receive from work-manager:
-- The user's request
-- Current `_notes/_summary.md` content
-- All `_notes/research-*.md` files (input from research phase)
-
-## Step 2: Read research
-
-Start by reading all `_notes/research-*.md` files. Summarize what is known before proposing a plan.
-
-## Step 3: Build the plan
+## Step 2: Build the plan
 
 Work with the user to create:
 
@@ -56,14 +36,19 @@ Work with the user to create:
 4. Add integration tests in `core/pl/pkg/auth/handler_test.go`
 ```
 
-**Agent split for implementation** — how to parallelize:
+**Parallelization strategy** — how to split work:
 ```markdown
-### Agent Split
-- Agent 1 (Go): Tasks 1, 2, 4 — core/pl auth package
-- Agent 2 (TypeScript): Task 3 — core/platforma SDK
+### Work Split
+- Group 1 (Go): Tasks 1, 2, 4 — core/pl auth package
+- Group 2 (TypeScript): Task 3 — core/platforma SDK
 ```
 
-## Step 4: Save decisions (PRIMARY DELIVERABLE)
+Split rules:
+- **Different languages -> separate groups.** Go and TypeScript never mix.
+- **Independent modules -> parallel groups.**
+- Each group should be self-contained with clear inputs/outputs.
+
+## Step 3: Save decisions (PRIMARY DELIVERABLE)
 
 Write design decisions, trade-offs, and rationale to `_notes/plan-*.md`:
 
@@ -94,7 +79,7 @@ Examples:
 - "need to modify 3 packages" -> `_notes/plan-scope.md`
 - "migration risk" -> `_notes/plan-risks.md`
 
-## Step 5: Update _summary.md
+## Step 4: Update _summary.md
 
 After plan is agreed:
 - Write the full plan to `_notes/_summary.md` Plan section
@@ -102,11 +87,11 @@ After plan is agreed:
 - Link all `_notes/plan-*.md` files in Work Notes section
 - Append to `_notes/worklog.md`: `- YYYY-MM-DD: Plan completed`
 
-## Step 6: Suggest transition
+## Step 5: Suggest transition
 
 When the plan is ready:
 ```
-[PLAN] Plan is complete. Task list, acceptance criteria, and agent split are documented.
+[PLAN] Plan is complete. Task list, acceptance criteria, and work split are documented.
 When ready, use `/work update move to implement` to begin coding.
 ```
 
@@ -127,5 +112,5 @@ If unknowns surface during planning:
 
 - Acceptance criteria are specific and testable
 - Task list is ordered with concrete file references
-- Agent split is documented (which agents, which tasks, which repos)
+- Work split is documented (which groups, which tasks, which repos)
 - No unresolved design questions blocking implementation

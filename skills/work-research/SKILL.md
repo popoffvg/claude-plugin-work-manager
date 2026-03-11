@@ -1,36 +1,16 @@
 ---
 name: work-research
 description: >
-  This skill should be used when the work-manager router delegates research-phase work
-  to the work-researcher agent. Provides the research workflow: topic planning, parallel
-  exploration via Explore subagents, saving findings to _notes/research-*.md, and
-  suggesting transition to plan phase.
+  This skill should be used when the current work phase is "research".
+  Provides the research workflow: scope breakdown, codebase exploration,
+  saving findings to _notes/research-*.md, and transition to plan phase.
 ---
 
 # work-research
 
 Research phase workflow. Primary deliverable: `_notes/research-*.md` files with findings.
 
-## Hard tool constraints
-
-| Tool | Allowed usage |
-|------|--------------|
-| **Read** | Any file — source code, docs, configs |
-| **Glob** | File search |
-| **Grep** | Content search |
-| **Bash** | Read-only only: `git log`, `git show`, `git diff`, `ls`, `find`, `wc`, `file`. **NEVER** create, modify, or delete files. |
-| **Write** | **Only** `_notes/*.md` (including `_notes/_summary.md`). Never write to any other path. |
-| **Agent** | **Only** Explore subagents with `run_in_background: true`. Never spawn agents that edit code. |
-| **mcp__qmd__*** | Search knowledge base freely |
-
-## Step 1: Receive task from router
-
-Receive from work-manager:
-- The user's request
-- Current `_notes/_summary.md` content
-- List of existing `_notes/` files
-
-## Step 2: Plan research
+## Step 1: Plan research scope
 
 Break scope into independent topics. Present a numbered list:
 
@@ -45,21 +25,17 @@ Proceed? (y / n / adjust)
 
 **Wait for user approval.** Do NOT start research until confirmed.
 
-## Step 3: Execute research
+## Step 2: Explore each topic
 
-For each topic, spawn an Explore subagent (`run_in_background: true`):
-
-```
-Agent(
-  subagent_type: "Explore",
-  run_in_background: true,
-  prompt: "Find <what> in <where>. Report: key files, patterns, relevant code."
-)
-```
+For each topic, gather information:
+- Search codebase for relevant files and patterns
+- Read key source files, configs, docs
+- Search QMD knowledge base for prior findings
+- Check git history for recent changes in the area
 
 Run topics in parallel where possible.
 
-## Step 4: Save findings (PRIMARY DELIVERABLE)
+## Step 3: Save findings (PRIMARY DELIVERABLE)
 
 For each completed topic:
 
@@ -87,11 +63,11 @@ Created: YYYY-MM-DD
 - <anything unclear or needing deeper investigation>
 ```
 
-## Step 5: Respond to user
+## Step 4: Respond to user
 
 Summarize findings with references to `_notes/` files. Keep chat response concise — detailed content lives in the files.
 
-## Step 6: Suggest next research or transition
+## Step 5: Suggest next research or transition
 
 If new areas emerged, propose them as a new numbered list.
 
