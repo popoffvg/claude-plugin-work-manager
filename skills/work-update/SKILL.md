@@ -12,7 +12,7 @@ argument-hint: [progress message]
 
 ## Step 1: Read state
 
-1. Read `_summary.md` in cwd
+1. Read `_notes/_summary.md` in cwd
 2. If not found — tell user, suggest `start work`
 3. Read `_notes/README.md` to understand current notes structure
 4. List files in `_notes/` to see existing work notes
@@ -45,13 +45,17 @@ If the update is a phase transition:
    - Update `phase:` in frontmatter
    - Update `## Phase:` section header (e.g. `## Phase: plan`)
    - Bold the current phase in the phases line (e.g. `Phases: research → **plan** → implement`)
-   - Append to Progress Log: `- YYYY-MM-DD: Phase transition: <old> → <new>`
+   - Append to `_notes/worklog.md`: `- YYYY-MM-DD: Phase transition: <old> → <new>`
+5. Report the new active agent:
+   - research → `work-researcher` (read-only exploration)
+   - plan → `work-planner` (task list, criteria, no code edits)
+   - implement → `work-implementer` (full tool access)
 
 If transition is not allowed, tell the user and show valid transitions for current phase.
 
 ## Step 4: Update progress
 
-- Append to `_summary.md` **Progress Log**: `- YYYY-MM-DD: <progress message>`
+- Append to `_notes/worklog.md`: `- YYYY-MM-DD: <progress message>`
 - Check off completed acceptance criteria: `- [ ]` -> `- [x]`
 - Mark completed plan steps accordingly
 
@@ -62,7 +66,7 @@ When the update contains **substantial findings** (architecture insight, researc
 1. **Check existing files** in `_notes/` — does this topic already have a file?
 2. **If yes**: append to existing file under a new section with date
 3. **If no**: create new `_notes/<slug>.md` with the findings
-4. **Update links**: add/update entry in `_summary.md` **Work Notes** section and `_notes/README.md` index
+4. **Update links**: add/update entry in `_notes/_summary.md` **Work Notes** section and `_notes/README.md` index
 
 Work note template:
 ```markdown
@@ -81,7 +85,7 @@ After every update, review the notes structure:
 
 - Any `_notes/` file over 100 lines? → Split into focused subtopics
 - Any closely related files that should merge? → Consolidate
-- Is `_summary.md` **Work Notes** section up to date with all `_notes/` files?
+- Is `_notes/_summary.md` **Work Notes** section up to date with all `_notes/` files?
 - Is `_notes/README.md` index accurate?
 
 Report any structural changes made.

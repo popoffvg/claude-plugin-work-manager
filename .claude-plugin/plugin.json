@@ -1,10 +1,8 @@
 {
   "name": "work-manager",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Work lifecycle management — start, track, recall, complete, and PR creation for tasks.",
-  "components": {
-    "agents": "agents/",
-    "skills": "skills/",
-    "hooks": "hooks/"
+  "author": {
+    "name": "popoffvg"
   }
 }

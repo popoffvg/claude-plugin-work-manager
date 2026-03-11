@@ -7,9 +7,9 @@ description: >
 
 # work-done
 
-1. Read `_summary.md` in cwd
+1. Read `_notes/_summary.md` in cwd
 2. If not found — tell user, suggest `start work`
 3. Update the file:
    - Frontmatter: `status: active` -> `status: done`, add `completed: YYYY-MM-DD`
-   - Append to Progress Log: `- YYYY-MM-DD: Work marked done`
+   - Append to `_notes/worklog.md`: `- YYYY-MM-DD: Work marked done`
 4. Confirm: work note updated, status = done

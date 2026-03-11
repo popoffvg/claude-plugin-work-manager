@@ -7,6 +7,6 @@ description: >
 
 # work-status
 
-1. Read `_summary.md` in cwd
+1. Read `_notes/_summary.md` in cwd
 2. Display raw content
 3. If not found — suggest `start work`
