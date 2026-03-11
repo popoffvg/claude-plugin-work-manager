@@ -4,10 +4,5 @@
   "description": "Work lifecycle management — start, track, recall, complete, and PR creation for tasks.",
   "author": {
     "name": "popoffvg"
-  },
-  "permissions": {
-    "allow": [
-      "Read(~/.claude/plugins/**)"
-    ]
   }
 }
