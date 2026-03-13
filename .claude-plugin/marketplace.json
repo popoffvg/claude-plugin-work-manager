@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Work lifecycle management plugin for Claude Code",
-    "version": "0.2.0"
+    "version": "0.2.4"
   },
   "plugins": [
     {
@@ -15,7 +15,7 @@
         "repo": "popoffvg/claude-plugin-work-manager"
       },
       "description": "Work lifecycle management — start, track, recall, complete, and PR creation for tasks. Three-phase workflow (research → plan → implement) with structural mode enforcement, auto-progress logging, and optional mise task workspace management.",
-      "version": "0.2.0",
+      "version": "0.2.4",
       "author": {
         "name": "popoffvg"
       },
